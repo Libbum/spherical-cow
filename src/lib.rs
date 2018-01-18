@@ -133,8 +133,8 @@ pub fn pack_spheres<C: Container, R: IndependentSample<f64>>(
         let curr_sphere = rng.choose(&front).unwrap().clone();
         // V := {s(c', r') ∈ S : d(c₀, c') ≤ r₀ + r' + 2r}
         let set_v = spheres
-            .clone() //TODO: would be nice to be able to drop this clone
-            .into_iter()
+            .iter()
+            .cloned()
             .filter(|s_dash| {
                 s_dash != &curr_sphere &&
                     nalgebra::distance(&curr_sphere.center, &s_dash.center) <=
