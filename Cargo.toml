@@ -16,3 +16,6 @@ dev = ["clippy"]
 rand = "0.4"
 nalgebra = "0.13"
 clippy = {version = "*", optional = true}
+
+[dev-dependencies]
+kiss3d = "0.12"
