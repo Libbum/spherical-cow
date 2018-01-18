@@ -1,0 +1,18 @@
+[package]
+name = "spherical-cow"
+version = "0.1.0"
+authors = ["Tim DuBois <tim@neophilus.net>"]
+description = "Spherical Cow: High volume fraction sphere packing in arbitrary geometries"
+repository = "https://github.com/Libbum/spherical-cow"
+readme = "./README.md"
+keywords = ["sphere", "packing", "spherepacking", "geometry", "obj"]
+license = "MIT/Apache-2.0"
+
+[features]
+default = []
+dev = ["clippy"]
+
+[dependencies]
+rand = "0.4"
+nalgebra = "0.13"
+clippy = {version = "*", optional = true}
