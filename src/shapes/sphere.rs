@@ -13,6 +13,8 @@ pub struct Sphere {
 impl Sphere {
     /// Creates a `new` sphere given the location of the spheres' `center` and its' `radius`.
     pub fn new(center: Point3<f32>, radius: f32) -> Sphere {
+        //TODO: Errors, not assertions
+        assert!(radius >= 0.0);
         Sphere {
             center: center,
             radius: radius,
@@ -29,6 +31,6 @@ impl Sphere {
 impl Container for Sphere {
     /// Checks if sphere exists inside the current bounding sphere.
     fn contains(&self, sphere: &Sphere) -> bool {
-        distance(&Point3::origin(), &sphere.center) + sphere.radius < self.radius
+        distance(&Point3::origin(), &sphere.center) + sphere.radius <= self.radius
     }
 }

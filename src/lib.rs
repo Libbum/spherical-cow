@@ -48,7 +48,7 @@ pub trait Container {
 
 /// Creates three initial spheres that are tangent pairwise. The incenter of the triangle formed
 /// by verticies located at the centers of each sphere is aligned at the origin.
-fn init_spheres(radii: &[f32; 3]) -> Vec<Sphere> {
+fn init_spheres<C: Container>(radii: &[f32; 3], container: &C) -> Vec<Sphere> {
     let mut init = Vec::new();
 
     //            C (x,y)
@@ -78,8 +78,9 @@ fn init_spheres(radii: &[f32; 3]) -> Vec<Sphere> {
     let incenter_y = (distance_c * y) / perimeter;
 
     // Create spheres at positions shown in the diagram above, but offset such
-    // that the incenter is now the origin. This offset isn't entirely needed, but
-    // positions us better for the camera when viewing the resultant packing.
+    // that the incenter is now the origin. This offset attempts to minimise
+    // bounding box issues in the sense that c may be close to or over the 
+    // bb boundary already
     init.push(Sphere::new(
         Point3::new(-incenter_x, -incenter_y, 0.),
         radius_a,
@@ -92,6 +93,9 @@ fn init_spheres(radii: &[f32; 3]) -> Vec<Sphere> {
         Point3::new(x - incenter_x, y - incenter_y, 0.),
         radius_c,
     ));
+
+    //TODO: error, not assert
+    assert!(init.iter().all(|sphere| container.contains(&sphere)));
     init
 }
 
@@ -116,7 +120,7 @@ pub fn pack_spheres<C: Container, R: IndependentSample<f64>>(
     ];
 
     // S := {s₁, s₂, s₃}
-    let mut spheres = init_spheres(&init_radii);
+    let mut spheres = init_spheres(&init_radii, &container);
 
     // F := {s₁, s₂, s₃}
     let mut front = spheres.clone();
