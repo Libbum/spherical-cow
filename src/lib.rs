@@ -32,6 +32,8 @@ extern crate rand;
 
 /// Contains the sphere type along with a number of helper shapes which can be used as containters.
 pub mod shapes;
+/// Useful helper functions such as a fast ray casting method for use with arbitrary shaped triangular meshes.
+pub mod util;
 
 use nalgebra::Point3;
 use nalgebra::core::Matrix;
@@ -79,7 +81,7 @@ fn init_spheres<C: Container>(radii: &[f32; 3], container: &C) -> Vec<Sphere> {
 
     // Create spheres at positions shown in the diagram above, but offset such
     // that the incenter is now the origin. This offset attempts to minimise
-    // bounding box issues in the sense that c may be close to or over the 
+    // bounding box issues in the sense that c may be close to or over the
     // bb boundary already
     init.push(Sphere::new(
         Point3::new(-incenter_x, -incenter_y, 0.),
@@ -226,29 +228,37 @@ fn identify_f<C: Container>(
     let beta = (distance_b - distance_a * dot_uv) / (1. - dot_uv.powi(2));
     let value_d = alpha.powi(2) + beta.powi(2) + 2. * alpha * beta * dot_uv + alpha * dot_uw +
         beta * dot_vw - distance_c;
-    let gamma_pos = 0.5 * (-dot_wt + (dot_wt.powi(2) - 4. * value_d).sqrt());
-    let gamma_neg = 0.5 * (-dot_wt - (dot_wt.powi(2) - 4. * value_d).sqrt());
-
-    let s_4_positive = Sphere::new(
-        Point3::from_coordinates(
-            alpha * unitvector_u + beta * unitvector_v + gamma_pos * unitvector_t,
-        ),
-        radius,
-    );
-    let s_4_negative = Sphere::new(
-        Point3::from_coordinates(
-            alpha * unitvector_u + beta * unitvector_v + gamma_neg * unitvector_t,
-        ),
-        radius,
-    );
+    let dot_wt_2 = dot_wt.powi(2);
+    let value_4d = 4. * value_d;
 
     let mut f = Vec::new();
-    // Make sure the spheres are bounded by the containing geometry and do not overlap any spheres in V
-    if container.contains(&s_4_positive) && !set_v.iter().any(|v| v.overlaps(&s_4_positive)) {
-        f.push(s_4_positive);
-    }
-    if container.contains(&s_4_negative) && !set_v.iter().any(|v| v.overlaps(&s_4_negative)) {
-        f.push(s_4_negative);
+    // There is a possiblity of obtaining imaginary solutions in gamma,
+    // so we must check this comparison. TODO: Would be nice to have
+    // some quick way of verifying this configuration and deny it early.
+    if dot_wt_2 > value_4d {
+        let gamma_pos = 0.5 * (-dot_wt + (dot_wt.powi(2) - 4. * value_d).sqrt());
+        let gamma_neg = 0.5 * (-dot_wt - (dot_wt.powi(2) - 4. * value_d).sqrt());
+
+        let s_4_positive = Sphere::new(
+            Point3::from_coordinates(
+                alpha * unitvector_u + beta * unitvector_v + gamma_pos * unitvector_t,
+            ),
+            radius,
+        );
+        let s_4_negative = Sphere::new(
+            Point3::from_coordinates(
+                alpha * unitvector_u + beta * unitvector_v + gamma_neg * unitvector_t,
+            ),
+            radius,
+        );
+
+        // Make sure the spheres are bounded by the containing geometry and do not overlap any spheres in V
+        if container.contains(&s_4_positive) && !set_v.iter().any(|v| v.overlaps(&s_4_positive)) {
+            f.push(s_4_positive);
+        }
+        if container.contains(&s_4_negative) && !set_v.iter().any(|v| v.overlaps(&s_4_negative)) {
+            f.push(s_4_negative);
+        }
     }
     f
 }
