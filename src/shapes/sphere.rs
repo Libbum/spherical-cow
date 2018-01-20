@@ -1,5 +1,6 @@
 use nalgebra::{distance, Point3};
 use std::f32::consts::FRAC_PI_3;
+use std::fmt;
 use Container;
 
 #[derive(PartialEq, Debug, Clone)]
@@ -42,5 +43,11 @@ impl Container for Sphere {
     /// Calculates the volume of this sphere in normalised units.
     fn volume(&self) -> f32 {
         self.volume()
+    }
+}
+
+impl fmt::Display for Sphere {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "[{{{}, {}, {}}}, {}]", self.center.coords.x, self.center.coords.y, self.center.coords.z, self.radius)
     }
 }
