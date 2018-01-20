@@ -37,7 +37,7 @@ More elaborate examples can be found in the [examples](examples/) directory.
 
 True to its name, it is indeed possible to build a spherical cow:
 
-![spherical cow in vacuum](examples/objects/cow_output.png)
+![spherical cow in vacuum](https://github.com/Libbum/spherical-cow/blob/master/examples/objects/cow_output.jpg)
 
 You can run this example yourself from [show_in_cow](examples/show_in_cow.rs).
 
