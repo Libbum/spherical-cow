@@ -1,9 +1,11 @@
+//! Useful helper functions such as a fast ray casting method and volume finder for use with arbitrary shaped triangular meshes.
+
 use nalgebra::{self, Point3, Vector3};
 use nalgebra::core::Matrix;
 
-/// Find the baycentric coordinates $(u,v)$ and distance $t$ given three triangle veriticies `vert0`, `vert1`, `vert2` and the
-/// unit vector `dir` ($D$) in the direction of a ray $R(t) = O + tD$ such that $R(t)$ is equivalent to a point $T(u,v)$ on
-/// triangle $T$. Here, $T(u,v) = (1-u-v)V_0+uV_1+uV_2$. If distance $t$ is less than the distance of our sphere from the
+/// Find the baycentric coordinates (u,v) and distance t given three triangle veriticies `vert0`, `vert1`, `vert2` and the
+/// unit vector `dir` (D) in the direction of a ray R(t) = O + tD such that R(t) is equivalent to a point T(u,v) on
+/// triangle T. Here, T(u,v) = (1-u-v)V_0+uV_1+uV_2. If distance t is less than the distance of our sphere from the
 /// origin (`sphere_dist`), then add one to the count.
 pub fn ray_intersection_count(
     triangles: &Vec<(Point3<f32>, Point3<f32>, Point3<f32>)>,

@@ -11,7 +11,7 @@ fn main() {
     let boundary = Sphere::new(Point3::origin(), 20.0);
     let mut sizes = Normal::new(3.0, 1.0);
 
-    let spheres = spherical_cow::pack_spheres(boundary, &mut sizes);
+    let spheres = spherical_cow::pack_spheres(&boundary, &mut sizes);
 
     println!("Number of spheres: {}", spheres.len());
 }

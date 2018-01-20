@@ -10,7 +10,7 @@ use kiss3d::light::Light;
 use spherical_cow::util::{trimesh_volume, ray_intersection_count};
 use spherical_cow::{PackedVolume, Container};
 use rand::distributions::Range;
-use nalgebra::{Point3, Translation3, UnitQuaternion, Vector3};
+use nalgebra::{Point3, Translation3};
 use obj::{Obj, SimplePolygon};
 use std::path::Path;
 
