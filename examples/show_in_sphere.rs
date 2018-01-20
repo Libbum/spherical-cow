@@ -23,7 +23,7 @@ fn main() {
     let boundary = Sphere::new(Point3::origin(), 2.0);
     let mut sizes = Range::new(0.1, 0.2);
 
-    let spheres = spherical_cow::pack_spheres(boundary, &mut sizes);
+    let spheres = spherical_cow::pack_spheres(&boundary, &mut sizes);
 
     // Populate spheres into scene.
     for sphere in spheres.iter() {

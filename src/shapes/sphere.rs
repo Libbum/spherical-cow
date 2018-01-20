@@ -1,4 +1,5 @@
 use nalgebra::{distance, Point3};
+use std::f32::consts::FRAC_PI_3;
 use Container;
 
 #[derive(PartialEq, Debug, Clone)]
@@ -26,11 +27,20 @@ impl Sphere {
     pub fn overlaps(&self, other: &Sphere) -> bool {
         distance(&self.center, &other.center) < self.radius + other.radius
     }
+
+    /// Calculates the volume of this sphere in normalised units.
+    fn volume(&self) -> f32 {
+        4. * FRAC_PI_3 * self.radius.powi(3)
+    }
 }
 
 impl Container for Sphere {
     /// Checks if sphere exists inside the current bounding sphere.
     fn contains(&self, sphere: &Sphere) -> bool {
         distance(&Point3::origin(), &sphere.center) + sphere.radius <= self.radius
+    }
+    /// Calculates the volume of this sphere in normalised units.
+    fn volume(&self) -> f32 {
+        self.volume()
     }
 }

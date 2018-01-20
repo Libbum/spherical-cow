@@ -32,4 +32,9 @@ impl Container for Cuboid {
                 sphere_extent.abs() + sphere.radius <= *extent
             })
     }
+
+    /// Calculates the volume of this cuboid in normalised units.
+    fn volume(&self) -> f32 {
+        self.half_extents.iter().map(|half_extent| 2. * half_extent).product()
+    }
 }
