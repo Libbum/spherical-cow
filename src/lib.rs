@@ -9,7 +9,13 @@
 //! spherical-cow = "0.1"
 //! ```
 //!
-//! And this in your crate root:
+//! If you'd like to enable serialization through `serde` add this line instead to turn on that feature
+//!
+//! ```toml
+//! spherical-cow = { version = "0.1", features = ["serde-1"] }
+//! ```
+//!
+//! Then, add this in your crate root:
 //!
 //! ```rust
 //! extern crate spherical_cow;
