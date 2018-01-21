@@ -11,7 +11,7 @@ A high volume fraction sphere packing library based on the advancing fronts algo
 
 Complete documentation can be found at ...
 
-A simple example to get you packing spheres of radii `(0.1..0.2)` into a container sphere of radius 2.
+A simple example to get you packing spheres of radii (0.1..0.2) into a container sphere of radius 2.
 ```rust
 extern crate nalgebra;
 extern crate rand;
@@ -37,7 +37,7 @@ More elaborate examples can be found in the [examples](examples/) directory.
 
 True to its name, it is indeed possible to build a spherical cow:
 
-![spherical cow in vacuum](https://github.com/Libbum/spherical-cow/blob/master/examples/objects/cow_output.jpg)
+![spherical cow in vacuum](https://github.com/Libbum/spherical-cow/blob/master/examples/objects/cow_output.jpg?raw=true)
 
 You can run this example yourself from [show_in_cow](examples/show_in_cow.rs).
 
