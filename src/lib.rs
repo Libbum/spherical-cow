@@ -60,7 +60,7 @@ pub mod shapes;
 pub mod util;
 
 use nalgebra::Point3;
-use nalgebra::core::Matrix;
+use nalgebra::core::{Matrix, Matrix3};
 use rand::Rng;
 use rand::distributions::IndependentSample;
 use std::iter::repeat;
@@ -69,7 +69,9 @@ use shapes::Sphere;
 /// The `Container` trait must be implemented for all shapes you wish to pack spheres into.
 /// Standard shapes such as spheres and cuboids already derrive this trait. More complicated
 /// shapes such as a triangular mesh are also straightforward to implement, examples
-/// of such can be seen in the [show_in_emerald](https://github.com/Libbum/spherical-cow/blob/master/examples/show_in_emerald.rs) and [show_in_cow](https://github.com/Libbum/spherical-cow/blob/master/examples/show_in_cow.rs) files.
+/// of such can be seen in the
+/// [show_in_emerald](https://github.com/Libbum/spherical-cow/blob/master/examples/show_in_emerald.rs)
+/// and [show_in_cow](https://github.com/Libbum/spherical-cow/blob/master/examples/show_in_cow.rs) files.
 pub trait Container {
     /// Checks if a sphere exists inside some bounding geometry.
     fn contains(&self, sphere: &Sphere) -> bool;
@@ -106,6 +108,70 @@ impl<C: Container> PackedVolume<C> {
     pub fn volume_fraction(&self) -> f32 {
         let vol_spheres: f32 = self.spheres.iter().map(|sphere| sphere.volume()).sum();
         vol_spheres/self.container.volume()
+    }
+
+    /// Calculates the void ratio e = Vv/Vs: the volume of all void space divided by the volume of
+    /// solids in the container. Here we take 'solids' to mean volumes of all packed spheres.
+    pub fn void_ratio(&self) -> f32 {
+        let vol_spheres: f32 = self.spheres.iter().map(|sphere| sphere.volume()).sum();
+        let vol_total = self.container.volume();
+        (vol_total - vol_spheres)/vol_spheres
+    }
+
+    /// The coordination number indicates the connectivity of the packing.
+    /// For any given sphere in the packing, its coordination number is defined as
+    /// the number of spheres it is in contact with. This function returns the
+    /// arethmetic mean of all coordination numbers in the packing, yielding a
+    /// overall coordination number of the system.
+    pub fn coordination_number(&self) -> f32 {
+        let num_particles = self.spheres.len() as f32;
+        let mut coordinations = 0;
+        for idx in 0..self.spheres.len() {
+            coordinations += self.sphere_contacts_count(idx);
+        }
+        coordinations as f32/num_particles
+    }
+
+    /// Generates the fabric tensor of the packing. The sum of all eigenvalues phi_i,j will always equal 1.
+    /// Perfectly isotropic packing should see the diagonals of this matrix = 1/3. Deviations from this value
+    /// indicates the amount of anisotropy in the system.
+    pub fn fabric_tensor(&self) -> Matrix3<f32> {
+        let phi = |i: usize, j: usize| {
+            let mut sum_all = 0.;
+            for idx in 0..self.spheres.len() {
+                let center = self.spheres[idx].center.coords;
+                // The set of all spheres in contact with the current sphere
+                let p_c = self.sphere_contacts(idx);
+                // Number of spheres in contact with the current sphere
+                let m_p = p_c.len() as f32;
+                let mut sum_vec = 0.;
+                for c in p_c.iter() {
+                    let vec_n_pc = Matrix::cross(&center, &c.center.coords);
+                    // The unit vector pointing from the center of the current sphere to
+                    // the center of a connecting sphere
+                    let n_pc = vec_n_pc/nalgebra::norm(&vec_n_pc);
+                    sum_vec += n_pc[i]*n_pc[j];
+                }
+                sum_all += sum_vec/m_p;
+            }
+            // phiᵢⱼ
+            1./self.spheres.len() as f32 * sum_all
+        };
+        Matrix3::from_fn(|r, c| phi(r,c))
+    }
+
+    /// Returns a set of spheres connected to the sphere at a chosen index.
+    fn sphere_contacts(&self, sphere_idx: usize) -> Vec<Sphere> {
+        let center = self.spheres[sphere_idx].center;
+        let radius = self.spheres[sphere_idx].radius;
+        self.spheres.iter().cloned().filter(|sphere| (nalgebra::distance(&center, &sphere.center) - (radius+sphere.radius)).abs() < 0.001).collect()
+    }
+
+    /// Calculates the number of contacts a sphere has with the rest of the packed set.
+    fn sphere_contacts_count(&self, sphere_idx: usize) -> usize {
+        let center = self.spheres[sphere_idx].center;
+        let radius = self.spheres[sphere_idx].radius;
+        self.spheres.iter().filter(|sphere| (nalgebra::distance(&center, &sphere.center) - (radius+sphere.radius)).abs() < 0.001).count()
     }
 }
 

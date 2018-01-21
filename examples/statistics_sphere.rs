@@ -15,5 +15,8 @@ fn main() {
 
     let packed = PackedVolume::new(boundary, &mut sizes);
 
-    println!("Volume Fraction: {:.2}%", packed.volume_fraction() * 100.);
+    println!("Volume Fraction    : {:.2}%", packed.volume_fraction() * 100.);
+    println!("Void Ratio         : {:.2}", packed.void_ratio());
+    println!("Coordination number: {:.2}", packed.coordination_number());
+    println!("Fabric Tensor      : {}", packed.fabric_tensor());
 }
