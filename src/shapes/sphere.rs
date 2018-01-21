@@ -48,6 +48,13 @@ impl Container for Sphere {
 
 impl fmt::Display for Sphere {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "[{{{}, {}, {}}}, {}]", self.center.coords.x, self.center.coords.y, self.center.coords.z, self.radius)
+        write!(
+            f,
+            "[{{{}, {}, {}}}, {}]",
+            self.center.coords.x,
+            self.center.coords.y,
+            self.center.coords.z,
+            self.radius
+        )
     }
 }
