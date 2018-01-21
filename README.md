@@ -1,6 +1,18 @@
-# Spherical Cow
+<h1 align="center">Spherical Cow</h1>
 
-A high volume fraction sphere packing library based on the advancing fronts algorithm outlined in Valera *et al.*, [Computational Particle Mechanics 2, 161 (2015)](https://doi.org/10.1007/s40571-015-0045-8).
+<div align="center">A high volume fraction sphere packing library</div>
+
+<div align="center">
+    <a href="https://crates.io/crates/spherical-cow">
+        <img src="https://img.shields.io/crates/v/spherical-cow.svg" alt="Crates.io">
+    </a>
+    |
+    <a href="https://docs.rs/spherical-cow/0.1.0/spherical_cow/">
+        <img src="https://img.shields.io/badge/api-documentation-blue.svg" alt="Docs.rs">
+    </a>
+</div>
+
+Based on the advancing fronts algorithm outlined in Valera *et al.*, [Computational Particle Mechanics 2, 161 (2015)](https://doi.org/10.1007/s40571-015-0045-8).
 
 > Milk production at a dairy farm was low, so the farmer wrote to the local university, asking for help from academia.
 > A multidisciplinary team of professors was assembled, headed by a theoretical physicist, and two weeks of intensive on-site investigation took place.
@@ -9,7 +21,7 @@ A high volume fraction sphere packing library based on the advancing fronts algo
 
 # Usage
 
-Complete documentation can be found at ...
+Complete documentation can be found at [docs.rs](https://docs.rs/spherical-cow/0.1.0/spherical_cow/).
 
 A simple example to get you packing spheres of radii (0.1..0.2) into a container sphere of radius 2.
 ```rust
