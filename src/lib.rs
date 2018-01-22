@@ -467,6 +467,12 @@ fn pairs(set: &[Sphere]) -> Vec<(&Sphere, &Sphere)> {
 }
 
 #[test]
+fn init_spheres_err() {
+    let container = Sphere::new(Point3::origin(), 0.1).unwrap();
+    assert!(init_spheres(&[10.,15.,20.], &container).is_err());
+}
+
+#[test]
 fn identify_f_known() {
     let one = Sphere::new(Point3::new(0.5, -0.28112677, 0.0), 0.5).unwrap();
     let two = Sphere::new(Point3::new(0.058333218, 0.44511732, 0.0), 0.35).unwrap();
