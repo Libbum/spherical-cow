@@ -5,6 +5,8 @@ addons:
     apt:
         packages:
             - libssl-dev
+            - xorg-dev
+            - libxrandr-dev
 cache: cargo
 rust:
   - nightly
