@@ -4,19 +4,19 @@
 <br />
 <div align="center">
     <a href="https://crates.io/crates/spherical-cow">
-        <img src="https://img.shields.io/crates/v/spherical-cow.svg" alt="Crates.io" />
+        <img src="https://img.shields.io/crates/v/spherical-cow.svg" alt="Crates.io" style="vertical-align: middle" />
     </a>
     │
     <a href="https://docs.rs/spherical-cow/0.1.0/spherical_cow/">
-        <img src="https://img.shields.io/badge/api-documentation-blue.svg" alt="Docs.rs" />
+        <img src="https://img.shields.io/badge/api-documentation-blue.svg" alt="Docs.rs" style="vertical-align: middle" />
     </a>
     │
     <a href="https://travis-ci.org/Libbum/spherical-cow">
-        <img src="https://travis-ci.org/Libbum/spherical-cow.svg?branch=master" alt="Travis-ci" />
+        <img src="https://travis-ci.org/Libbum/spherical-cow.svg?branch=master" alt="Travis-ci" style="vertical-align: middle" />
     </a>
     │
     <a href="https://codecov.io/gh/Libbum/spherical-cow">
-        <img src="https://codecov.io/gh/Libbum/spherical-cow/branch/master/graph/badge.svg" alt="Codecov" />
+        <img src="https://codecov.io/gh/Libbum/spherical-cow/branch/master/graph/badge.svg" alt="Codecov" style="vertical-align: middle" />
     </a>
 </div>
 <br />
@@ -77,6 +77,7 @@ The reason this library was initially written was to optimise the layout of infl
 
   - Complete error handling.
   - Code coverage and testing suite filled out.
+  - Add [float-cmp](https://github.com/mikedilger/float-cmp) for more robust floating point comparisons.
 
 - 0.1
 

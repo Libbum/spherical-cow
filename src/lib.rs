@@ -61,6 +61,7 @@
 
 extern crate nalgebra;
 extern crate rand;
+extern crate float_cmp;
 #[cfg(feature = "serde-1")]
 extern crate serde;
 
@@ -76,6 +77,7 @@ use rand::Rng;
 use rand::distributions::IndependentSample;
 use std::iter::repeat;
 use shapes::Sphere;
+use float_cmp::ApproxEqRatio;
 use errors::SphericalCowError as Error;
 
 /// The `Container` trait must be implemented for all shapes you wish to pack spheres into.
@@ -195,8 +197,8 @@ impl<C: Container> PackedVolume<C> {
             .iter()
             .cloned()
             .filter(|sphere| {
-                (nalgebra::distance(&center, &sphere.center) - (radius + sphere.radius)).abs() <
-                    0.001
+                nalgebra::distance(&center, &sphere.center)
+                    .approx_eq_ratio(&(radius + sphere.radius), 0.0001)
             })
             .collect()
     }
@@ -208,8 +210,8 @@ impl<C: Container> PackedVolume<C> {
         self.spheres
             .iter()
             .filter(|sphere| {
-                (nalgebra::distance(&center, &sphere.center) - (radius + sphere.radius)).abs() <
-                    0.001
+                nalgebra::distance(&center, &sphere.center)
+                    .approx_eq_ratio(&(radius + sphere.radius), 0.0001)
             })
             .count()
     }

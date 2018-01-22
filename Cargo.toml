@@ -16,6 +16,7 @@ serde-1 = ["serde", "nalgebra/serde-serialize"]
 [dependencies]
 rand = "0.4"
 nalgebra = "0.13"
+float-cmp = "0.2"
 serde = { version = "1.0", optional = true }
 clippy = {version = "0.0.180", optional = true}
 
