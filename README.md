@@ -63,6 +63,23 @@ The paper which this algorithm comes from gives two examples of real world use c
 
 The reason this library was initially written was to optimise the layout of inflatable [space habitats](https://github.com/Libbum/space-habitats) which may one day be constructed on the Moon and Mars.
 
+# Changelog
+
+- 0.1.1
+
+  - Complete error handling.
+  - Code coverage and testing suite filled out.
+
+- 0.1
+
+  - Initial release.
+  - Sphere and cuboid container shapes.
+  - Contained trait for user defined shapes.
+  - Fully functional in arbitrary geometry using user defined trimeshes.
+  - Utility to identify volume of trimeshes using tetrahedron summation.
+  - Utility to identify if spheres are contained within trimeshes via ray casting.
+  - Volume fraction, void ratio, coordination number and fabric tensors provide quantitative analysis of packing.
+
 # License
 
 Licensed under the Apache License, [Version 2.0](http://www.apache.org/licenses/LICENSE-2.0) or the [MIT license](http://opensource.org/licenses/MIT), at your option.
