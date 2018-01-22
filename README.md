@@ -6,15 +6,15 @@
     <a href="https://crates.io/crates/spherical-cow">
         <img src="https://img.shields.io/crates/v/spherical-cow.svg" alt="Crates.io" />
     </a>
-    |
+    │
     <a href="https://docs.rs/spherical-cow/0.1.0/spherical_cow/">
         <img src="https://img.shields.io/badge/api-documentation-blue.svg" alt="Docs.rs" />
     </a>
-    |
+    │
     <a href="https://travis-ci.org/Libbum/spherical-cow">
         <img src="https://travis-ci.org/Libbum/spherical-cow.svg?branch=master" alt="Travis-ci" />
     </a>
-    |
+    │
     <a href="https://codecov.io/gh/Libbum/spherical-cow">
         <img src="https://codecov.io/gh/Libbum/spherical-cow/branch/master/graph/badge.svg" alt="Codecov" />
     </a>

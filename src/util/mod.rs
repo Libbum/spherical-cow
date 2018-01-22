@@ -3,12 +3,12 @@
 use nalgebra::{self, Point3, Vector3};
 use nalgebra::core::Matrix;
 
-/// Find the baycentric coordinates (u,v) and distance t given three triangle veriticies `vert0`, `vert1`, `vert2` and the
-/// unit vector `dir` (D) in the direction of a ray R(t) = O + tD such that R(t) is equivalent to a point T(u,v) on
-/// triangle T. Here, T(u,v) = (1-u-v)V_0+uV_1+uV_2. If distance t is less than the distance of our sphere from the
+/// Find the baycentric coordinates `(u,v)` and distance `t` given three triangle veriticies `vert0`, `vert1`, `vert2` and the
+/// unit vector `dir` (`D`) in the direction of a ray `R(t) = O + tD` such that `R(t)` is equivalent to a point `T(u,v)` on
+/// triangle `T`. Here, `T(u,v) = (1-u-v)V_0+uV_1+uV_2`. If distance `t` is less than the distance of our sphere from the
 /// origin (`sphere_dist`), then add one to the count.
 pub fn ray_intersection_count(
-    triangles: &Vec<(Point3<f32>, Point3<f32>, Point3<f32>)>,
+    triangles: &[(Point3<f32>, Point3<f32>, Point3<f32>)],
     dir: Vector3<f32>,
     o_dist: f32,
 ) -> i32 {
@@ -47,7 +47,7 @@ pub fn ray_intersection_count(
 
 /// Identify the volume of a trimesh which contains the cartesian origin (0, 0, 0).
 /// Consider the tetrahedron created by any triangle and the origin OABC and sum thier volumes.
-pub fn trimesh_volume(triangles: &Vec<(Point3<f32>, Point3<f32>, Point3<f32>)>) -> f32 {
+pub fn trimesh_volume(triangles: &[(Point3<f32>, Point3<f32>, Point3<f32>)]) -> f32 {
     let sixth = 1. / 6.;
     triangles
         .iter()

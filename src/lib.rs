@@ -82,8 +82,8 @@ use errors::SphericalCowError as Error;
 /// Standard shapes such as spheres and cuboids already derrive this trait. More complicated
 /// shapes such as a triangular mesh are also straightforward to implement, examples
 /// of such can be seen in the
-/// [show_in_emerald](https://github.com/Libbum/spherical-cow/blob/master/examples/show_in_emerald.rs)
-/// and [show_in_cow](https://github.com/Libbum/spherical-cow/blob/master/examples/show_in_cow.rs) files.
+/// [`show_in_emerald`](https://github.com/Libbum/spherical-cow/blob/master/examples/show_in_emerald.rs)
+/// and [`show_in_cow`](https://github.com/Libbum/spherical-cow/blob/master/examples/show_in_cow.rs) files.
 pub trait Container {
     /// Checks if a sphere exists inside some bounding geometry.
     fn contains(&self, sphere: &Sphere) -> bool;
@@ -172,7 +172,7 @@ impl<C: Container> PackedVolume<C> {
                 // Number of spheres in contact with the current sphere
                 let m_p = p_c.len() as f32;
                 let mut sum_vec = 0.;
-                for c in p_c.iter() {
+                for c in &p_c {
                     let vec_n_pc = Matrix::cross(&center, &c.center.coords);
                     // The unit vector pointing from the center of the current sphere to
                     // the center of a connecting sphere
@@ -184,7 +184,7 @@ impl<C: Container> PackedVolume<C> {
             // phiᵢⱼ
             1. / self.spheres.len() as f32 * sum_all
         };
-        Matrix3::from_fn(|r, c| phi(r, c))
+        Matrix3::from_fn(phi)
     }
 
     /// Returns a set of spheres connected to the sphere at a chosen index.
@@ -349,7 +349,7 @@ fn identify_f<C: Container>(
     s_2: &Sphere,
     s_3: &Sphere,
     container: &C,
-    set_v: &Vec<Sphere>,
+    set_v: &[Sphere],
     radius: f32,
 ) -> Result<Vec<Sphere>, Error> {
 
