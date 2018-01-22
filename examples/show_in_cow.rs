@@ -75,14 +75,12 @@ fn main() {
     }
 
     // This is our bounding trimesh of a cow.
-    let boundary = CowBox {
-        triangles: triangles,
-    };
+    let boundary = CowBox { triangles: triangles };
 
     // Pack spheres with relatively small radii to fit in the legs and horns.
     // WARNING: This will take a while (as in 90 minutes) to generate!!!
     let mut sizes = Range::new(0.03, 0.05);
-    let packed = PackedVolume::new(boundary, &mut sizes);
+    let packed = PackedVolume::new(boundary, &mut sizes).unwrap();
 
     println!("Volume Fraction: {:.2}%", packed.volume_fraction() * 100.);
 

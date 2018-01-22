@@ -58,7 +58,8 @@ fn main() {
     let at = Point3::origin();
     let mut camera = ArcBall::new(eye, at);
 
-    let mut window = Window::new_with_size("Spherical Cow: Spheres in an emerald trimesh", 1920, 1080);
+    let mut window =
+        Window::new_with_size("Spherical Cow: Spheres in an emerald trimesh", 1920, 1080);
     window.set_light(Light::StickToCamera);
 
     // Load an object file from disk
@@ -73,29 +74,27 @@ fn main() {
     for object in data.objects.iter() {
         for group in object.groups.iter() {
             for poly in group.polys.iter() {
-                indices.push(Point3::new(poly[0].0 as u32, poly[1].0 as u32, poly[2].0 as u32));
+                indices.push(Point3::new(
+                    poly[0].0 as u32,
+                    poly[1].0 as u32,
+                    poly[2].0 as u32,
+                ));
                 triangles.push((points[poly[0].0], points[poly[1].0], points[poly[2].0]));
             }
         }
     }
 
     // Build a mesh to display later. We don't actually use this mesh for the calculation.
-    let mesh = Rc::new(RefCell::new(Mesh::new(
-        points.clone(),
-        indices,
-        None,
-        None,
-        false,
-    )));
+    let mesh = Rc::new(RefCell::new(
+        Mesh::new(points.clone(), indices, None, None, false),
+    ));
 
     // This is our bounding mesh in the shape of an emerald.
-    let boundary = Emerald {
-        triangles: triangles,
-    };
+    let boundary = Emerald { triangles: triangles };
 
     // Pack spheres with radii between 0.3 and 0.5.
     let mut sizes = Range::new(0.3, 0.5);
-    let packed = PackedVolume::new(boundary, &mut sizes);
+    let packed = PackedVolume::new(boundary, &mut sizes).unwrap();
 
     println!("Volume Fraction: {:.2}%", packed.volume_fraction() * 100.);
 

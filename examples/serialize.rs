@@ -12,9 +12,9 @@ fn main() {
     // We'll pack some large-ish spheres into a cuboid to show serialization
     // of both shape types, then serialize the resultant PackedVolume.
     let mut sizes = Range::new(0.5, 0.6);
-    let cuboid = Cuboid::new(1.5, 2., 1.7);
+    let cuboid = Cuboid::new(1.5, 2., 1.7).unwrap();
 
-    let packed = PackedVolume::new(cuboid, &mut sizes);
+    let packed = PackedVolume::new(cuboid, &mut sizes).unwrap();
     let ser_packed = serde_json::to_string_pretty(&packed).unwrap();
     println!("Serialized PackedVolume:");
     println!("{}", ser_packed);

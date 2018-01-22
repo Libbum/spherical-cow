@@ -104,7 +104,7 @@ impl<'de> Deserialize<'de> for Sphere {
                 let radius = seq.next_element()?.ok_or_else(
                     || de::Error::invalid_length(1, &self),
                 )?;
-                Ok(Sphere::new(center, radius))
+                Ok(Sphere::new(center, radius).map_err(de::Error::custom)?)
             }
 
             fn visit_map<V>(self, mut map: V) -> Result<Sphere, V::Error>
@@ -131,7 +131,7 @@ impl<'de> Deserialize<'de> for Sphere {
                 }
                 let center = center.ok_or_else(|| de::Error::missing_field("center"))?;
                 let radius = radius.ok_or_else(|| de::Error::missing_field("radius"))?;
-                Ok(Sphere::new(center, radius))
+                Ok(Sphere::new(center, radius).map_err(de::Error::custom)?)
             }
         }
 
@@ -194,7 +194,7 @@ impl<'de> Deserialize<'de> for Cuboid {
                 let half_extents = seq.next_element()?.ok_or_else(
                     || de::Error::invalid_length(0, &self),
                 )?;
-                Ok(Cuboid::from_vec(half_extents))
+                Ok(Cuboid::from_vec(half_extents).map_err(de::Error::custom)?)
             }
 
             fn visit_map<V>(self, mut map: V) -> Result<Cuboid, V::Error>
@@ -215,7 +215,7 @@ impl<'de> Deserialize<'de> for Cuboid {
                 let half_extents = half_extents.ok_or_else(
                     || de::Error::missing_field("half_extents"),
                 )?;
-                Ok(Cuboid::from_vec(half_extents))
+                Ok(Cuboid::from_vec(half_extents).map_err(de::Error::custom)?)
             }
         }
 

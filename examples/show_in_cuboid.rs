@@ -20,10 +20,10 @@ fn main() {
     window.set_light(Light::StickToCamera);
 
     // Pack spheres with radii between 0.05 and 0.1 into a cube with a halfspace of 1.5.
-    let boundary = Cuboid::new(1.5, 1.5, 1.5);
+    let boundary = Cuboid::new(1.5, 1.5, 1.5).unwrap();
     let mut sizes = Range::new(0.05, 0.1);
 
-    let spheres = spherical_cow::pack_spheres(&boundary, &mut sizes);
+    let spheres = spherical_cow::pack_spheres(&boundary, &mut sizes).unwrap();
 
     // Populate spheres into scene.
     for sphere in spheres.iter() {

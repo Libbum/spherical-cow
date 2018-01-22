@@ -1,5 +1,6 @@
 use shapes::Sphere;
 use Container;
+use errors::SphericalCowError as Error;
 
 #[derive(PartialEq, Debug, Clone)]
 /// Constructs a cuboid centered at the origin in Euclidean space.
@@ -11,20 +12,22 @@ pub struct Cuboid {
 impl Cuboid {
     /// Creates a new box from its `half_extents`. Half-extents are the box half-width along each
     /// axis, all of which must be greater than 0.
-    pub fn new(extent_x: f32, extent_y: f32, extent_z: f32) -> Cuboid {
+    pub fn new(extent_x: f32, extent_y: f32, extent_z: f32) -> Result<Cuboid, Error> {
         //TODO: Should also have an orientation vector so this can be arbitrarily rotated too.
-        //TODO: Errors, not assertions
-        assert!(extent_x >= 0.0);
-        assert!(extent_y >= 0.0);
-        assert!(extent_z >= 0.0);
-        Cuboid { half_extents: vec![extent_x, extent_y, extent_z] }
+        if extent_x <= 0.0 || extent_y <= 0.0 || extent_z <= 0.0 {
+            Err(Error::NegativeRadius)
+        } else {
+            Ok(Cuboid { half_extents: vec![extent_x, extent_y, extent_z] })
+        }
     }
 
     /// Similar than calling `new`, but the `half_extents` are contained within a vector.
-    pub fn from_vec(half_extents: Vec<f32>) -> Cuboid {
-        //TODO: Errors, not assertions
-        assert!(half_extents.iter().all(|he| *he >= 0.0));
-        Cuboid { half_extents: half_extents }
+    pub fn from_vec(half_extents: Vec<f32>) -> Result<Cuboid, Error> {
+        if half_extents.iter().any(|he| *he <= 0.0) {
+            Err(Error::NegativeRadius)
+        } else {
+            Ok(Cuboid { half_extents: half_extents })
+        }
     }
 }
 

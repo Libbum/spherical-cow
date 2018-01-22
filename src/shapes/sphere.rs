@@ -2,6 +2,7 @@ use nalgebra::{distance, Point3};
 use std::f32::consts::FRAC_PI_3;
 use std::fmt;
 use Container;
+use errors::SphericalCowError as Error;
 
 #[derive(PartialEq, Debug, Clone)]
 /// Constructs a sphere located at `center` in Euclidean space with a given `radius`.
@@ -14,12 +15,14 @@ pub struct Sphere {
 
 impl Sphere {
     /// Creates a `new` sphere given the location of the spheres' `center` and its' `radius`.
-    pub fn new(center: Point3<f32>, radius: f32) -> Sphere {
-        //TODO: Errors, not assertions
-        assert!(radius >= 0.0);
-        Sphere {
-            center: center,
-            radius: radius,
+    pub fn new(center: Point3<f32>, radius: f32) -> Result<Sphere, Error> {
+        if radius <= 0.0 {
+            Err(Error::NegativeRadius)
+        } else {
+            Ok(Sphere {
+                center: center,
+                radius: radius,
+            })
         }
     }
 

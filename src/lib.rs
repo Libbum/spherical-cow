@@ -38,10 +38,10 @@
 //! fn main() {
 //!     // Pack spheres with radii between 0.05 and 0.1 into a spherical container of radius 2,
 //!     // output quantitative analysis data.
-//!     let boundary = Sphere::new(Point3::origin(), 2.0);
+//!     let boundary = Sphere::new(Point3::origin(), 2.0).unwrap();
 //!     let mut sizes = Range::new(0.05, 0.1);
 //!
-//!     let packed = PackedVolume::new(boundary, &mut sizes);
+//!     let packed = PackedVolume::new(boundary, &mut sizes).unwrap();
 //!
 //!     println!("Volume Fraction: {:.2}%", packed.volume_fraction() * 100.);
 //! }
@@ -66,6 +66,7 @@ extern crate serde;
 
 pub mod shapes;
 pub mod util;
+mod errors;
 #[cfg(feature = "serde-1")]
 mod serialization;
 
@@ -75,6 +76,7 @@ use rand::Rng;
 use rand::distributions::IndependentSample;
 use std::iter::repeat;
 use shapes::Sphere;
+use errors::SphericalCowError as Error;
 
 /// The `Container` trait must be implemented for all shapes you wish to pack spheres into.
 /// Standard shapes such as spheres and cuboids already derrive this trait. More complicated
@@ -105,15 +107,17 @@ impl<C: Container> PackedVolume<C> {
     pub fn new<R: IndependentSample<f64>>(
         container: C,
         mut size_distribution: &mut R,
-    ) -> PackedVolume<C> {
-        PackedVolume::<C> {
-            spheres: pack_spheres::<C, R>(&container, &mut size_distribution),
+    ) -> Result<PackedVolume<C>, Error> {
+        let spheres = pack_spheres::<C, R>(&container, &mut size_distribution)?;
+        Ok(PackedVolume::<C> {
+            spheres: spheres,
             container: container,
-        }
+        })
     }
 
     /// Creates a `PackedVolume` from a pre calculated cluster of `spheres`. Useful for gathering statistics from
     /// packings generated elsewhere for comparison to the current algorithm. Also used for deserialization.
+    /// This method is currently unchecked, so use with caution.
     pub fn from_vec(spheres: Vec<Sphere>, container: C) -> PackedVolume<C> {
         PackedVolume::<C> {
             spheres: spheres,
@@ -222,7 +226,7 @@ impl<C: Container> PackedVolume<C> {
 pub fn pack_spheres<C: Container, R: IndependentSample<f64>>(
     container: &C,
     size_distribution: &mut R,
-) -> Vec<Sphere> {
+) -> Result<Vec<Sphere>, Error> {
     // IndependentSample is already derrived for all distributions in `rand` with f64,
     // so we just downsample here instead of implementing traits on f32 for everything.
     let mut rng = rand::thread_rng();
@@ -235,7 +239,7 @@ pub fn pack_spheres<C: Container, R: IndependentSample<f64>>(
     ];
 
     // S := {s₁, s₂, s₃}
-    let mut spheres = init_spheres(&init_radii, container);
+    let mut spheres = init_spheres(&init_radii, container)?;
 
     // F := {s₁, s₂, s₃}
     let mut front = spheres.clone();
@@ -245,7 +249,7 @@ pub fn pack_spheres<C: Container, R: IndependentSample<f64>>(
 
     'outer: while !front.is_empty() {
         // s₀ := s(c₀, r₀) picked at random from F
-        let curr_sphere = rng.choose(&front).unwrap().clone();
+        let curr_sphere = rng.choose(&front).ok_or(Error::NoneFront)?.clone();
         // V := {s(c', r') ∈ S : d(c₀, c') ≤ r₀ + r' + 2r}
         let set_v = spheres
             .iter()
@@ -258,11 +262,11 @@ pub fn pack_spheres<C: Container, R: IndependentSample<f64>>(
             .collect::<Vec<_>>();
 
         for (s_i, s_j) in pairs(&set_v) {
-            let mut set_f = identify_f(&curr_sphere, s_i, s_j, container, &set_v, new_radius);
+            let mut set_f = identify_f(&curr_sphere, s_i, s_j, container, &set_v, new_radius)?;
             if !set_f.is_empty() {
                 // Found at least one position to place the sphere,
                 // choose one and move on
-                let s_new = rng.choose(&set_f).unwrap();
+                let s_new = rng.choose(&set_f).ok_or(Error::NoneSetF)?;
                 front.push(s_new.clone());
                 spheres.push(s_new.clone());
                 new_radius = size_distribution.ind_sample(&mut rng) as f32;
@@ -272,12 +276,12 @@ pub fn pack_spheres<C: Container, R: IndependentSample<f64>>(
         // NOTE: his is a nightly function only
         front.remove_item(&curr_sphere);
     }
-    spheres
+    Ok(spheres)
 }
 
 /// Creates three initial spheres that are tangent pairwise. The incenter of the triangle formed
 /// by verticies located at the centers of each sphere is aligned at the origin.
-fn init_spheres<C: Container>(radii: &[f32; 3], container: &C) -> Vec<Sphere> {
+fn init_spheres<C: Container>(radii: &[f32; 3], container: &C) -> Result<Vec<Sphere>, Error> {
     let mut init = Vec::new();
 
     //            C (x,y)
@@ -310,22 +314,29 @@ fn init_spheres<C: Container>(radii: &[f32; 3], container: &C) -> Vec<Sphere> {
     // that the incenter is now the origin. This offset attempts to minimise
     // bounding box issues in the sense that c may be close to or over the
     // bb boundary already
-    init.push(Sphere::new(
-        Point3::new(-incenter_x, -incenter_y, 0.),
-        radius_a,
-    ));
-    init.push(Sphere::new(
+    let s_1 = Sphere::new(Point3::new(-incenter_x, -incenter_y, 0.), radius_a)?;
+    if container.contains(&s_1) {
+        init.push(s_1);
+    } else {
+        return Err(Error::Uncontained);
+    }
+    let s_2 = Sphere::new(
         Point3::new(distance_c - incenter_x, -incenter_y, 0.),
         radius_b,
-    ));
-    init.push(Sphere::new(
-        Point3::new(x - incenter_x, y - incenter_y, 0.),
-        radius_c,
-    ));
+    )?;
+    if container.contains(&s_2) {
+        init.push(s_2);
+    } else {
+        return Err(Error::Uncontained);
+    }
+    let s_3 = Sphere::new(Point3::new(x - incenter_x, y - incenter_y, 0.), radius_c)?;
+    if container.contains(&s_3) {
+        init.push(s_3);
+    } else {
+        return Err(Error::Uncontained);
+    }
 
-    //TODO: error, not assert
-    assert!(init.iter().all(|sphere| container.contains(&sphere)));
-    init
+    Ok(init)
 }
 
 /// $f$ is as a set of spheres (or the empty set) such that they have a known `radius`,
@@ -340,7 +351,7 @@ fn identify_f<C: Container>(
     container: &C,
     set_v: &Vec<Sphere>,
     radius: f32,
-) -> Vec<Sphere> {
+) -> Result<Vec<Sphere>, Error> {
 
     //The center points of s_1, s_2, s_3 are verticies of a tetrahedron,
     //and the distances d_1, d_2, d_3 can be defined as the distances from these points to
@@ -410,13 +421,13 @@ fn identify_f<C: Container>(
                 alpha * unitvector_u + beta * unitvector_v + gamma_pos * unitvector_t,
             ),
             radius,
-        );
+        )?;
         let s_4_negative = Sphere::new(
             Point3::from_coordinates(
                 alpha * unitvector_u + beta * unitvector_v + gamma_neg * unitvector_t,
             ),
             radius,
-        );
+        )?;
 
         // Make sure the spheres are bounded by the containing geometry and do not overlap any spheres in V
         if container.contains(&s_4_positive) && !set_v.iter().any(|v| v.overlaps(&s_4_positive)) {
@@ -426,7 +437,7 @@ fn identify_f<C: Container>(
             f.push(s_4_negative);
         }
     }
-    f
+    Ok(f)
 }
 
 /// Calculates all possible pairs of a `set` of values.

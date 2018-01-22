@@ -26,3 +26,28 @@ serde_json = "1.0"
 
 [package.metadata.docs.rs]
 features = ["serde-1"]
+
+[[example]]
+name = "serialize"
+required-features = ["serde-1"]
+
+[[example]]
+name = "count_sphere_normal"
+
+[[example]]
+name = "count_sphere_range"
+
+[[example]]
+name = "show_in_cow"
+
+[[example]]
+name = "show_in_cuboid"
+
+[[example]]
+name = "show_in_emerald"
+
+[[example]]
+name = "show_in_sphere"
+
+[[example]]
+name = "statistics_sphere"

@@ -1,7 +1,7 @@
 <h1 align="center">Spherical Cow</h1>
 
 <div align="center">A high volume fraction sphere packing library</div>
-
+<br />
 <div align="center">
     <a href="https://crates.io/crates/spherical-cow">
         <img src="https://img.shields.io/crates/v/spherical-cow.svg" alt="Crates.io">
@@ -11,6 +11,7 @@
         <img src="https://img.shields.io/badge/api-documentation-blue.svg" alt="Docs.rs">
     </a>
 </div>
+<br />
 
 Based on the advancing fronts algorithm outlined in Valera *et al.*, [Computational Particle Mechanics 2, 161 (2015)](https://doi.org/10.1007/s40571-015-0045-8).
 
