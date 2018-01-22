@@ -15,7 +15,7 @@ impl Cuboid {
     pub fn new(extent_x: f32, extent_y: f32, extent_z: f32) -> Result<Cuboid, Error> {
         //TODO: Should also have an orientation vector so this can be arbitrarily rotated too.
         if extent_x <= 0.0 || extent_y <= 0.0 || extent_z <= 0.0 {
-            Err(Error::NegativeRadius)
+            Err(Error::NegativeExtents)
         } else {
             Ok(Cuboid { half_extents: vec![extent_x, extent_y, extent_z] })
         }
@@ -24,7 +24,7 @@ impl Cuboid {
     /// Similar than calling `new`, but the `half_extents` are contained within a vector.
     pub fn from_vec(half_extents: Vec<f32>) -> Result<Cuboid, Error> {
         if half_extents.iter().any(|he| *he <= 0.0) {
-            Err(Error::NegativeRadius)
+            Err(Error::NegativeExtents)
         } else {
             Ok(Cuboid { half_extents: half_extents })
         }

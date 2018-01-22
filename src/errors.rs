@@ -6,6 +6,7 @@ use std::fmt;
 #[derive(Debug)]
 pub enum SphericalCowError {
     NegativeRadius,
+    NegativeExtents,
     Uncontained,
     NoneSetF,
     NoneFront,
@@ -15,6 +16,7 @@ impl fmt::Display for SphericalCowError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             SphericalCowError::NegativeRadius => write!(f, "Supplied radius is negative."),
+            SphericalCowError::NegativeExtents => write!(f, "A supplied half extent is negative."),
             SphericalCowError::Uncontained => {
                 write!(f, "Sphere is not contained within bounding geometry.")
             }
@@ -32,6 +34,7 @@ impl Error for SphericalCowError {
     fn description(&self) -> &str {
         match *self {
             SphericalCowError::NegativeRadius => "negative radius",
+            SphericalCowError::NegativeExtents => "negative half extent",
             SphericalCowError::Uncontained => "outside bounding geometry",
             SphericalCowError::NoneSetF => "none from set f",
             SphericalCowError::NoneFront => "none from front",
