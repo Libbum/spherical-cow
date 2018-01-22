@@ -67,7 +67,7 @@ extern crate serde;
 
 pub mod shapes;
 pub mod util;
-mod errors;
+pub mod errors;
 #[cfg(feature = "serde-1")]
 mod serialization;
 
@@ -464,4 +464,37 @@ fn pairs(set: &[Sphere]) -> Vec<(&Sphere, &Sphere)> {
         }
         vec_pairs
     }
+}
+
+#[test]
+fn identify_f_known() {
+    let one = Sphere::new(Point3::new(0.5, -0.28112677, 0.0), 0.5).unwrap();
+    let two = Sphere::new(Point3::new(0.058333218, 0.44511732, 0.0), 0.35).unwrap();
+    let three = Sphere::new(Point3::new(-0.70000005, -0.28112677, 0.0), 0.7).unwrap();
+    let container = Sphere::new(Point3::origin(), 20.0).unwrap();
+
+    let four_p = Sphere::new(Point3::new(0.06666667, 0.12316024, 0.6773287), 0.4).unwrap();
+    let four_n = Sphere::new(Point3::new(0.06666667, 0.12316024, -0.6773287), 0.4).unwrap();
+
+    let found = identify_f::<Sphere>(&one, &two, &three, &container, &Vec::new(), 0.4).unwrap();
+
+    println!("{:?}", found);
+    assert!(found.contains(&four_p));
+    assert!(found.contains(&four_n));
+}
+
+#[test]
+fn pairs_of_spheres() {
+    let one = Sphere::new(Point3::origin(), 1.0).unwrap();
+    let two = Sphere::new(Point3::new(1.0, 0.0, 0.0), 2.0).unwrap();
+    let three = Sphere::new(Point3::new(0.0, 1.0, 0.0), 3.0).unwrap();
+
+    let spheres = vec![one.clone(), two.clone(), three.clone()];
+    let pairs = pairs(&spheres);
+
+    let mut pair_iter = pairs.iter();
+    assert_eq!(pairs.len(), 3);
+    assert_eq!(pair_iter.next(), Some(&(&two, &one)));
+    assert_eq!(pair_iter.next(), Some(&(&three, &one)));
+    assert_eq!(pair_iter.next(), Some(&(&three, &two)));
 }
