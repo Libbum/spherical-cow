@@ -43,10 +43,10 @@ use rand::distributions::Range;
 use nalgebra::Point3;
 
 fn main() {
-    let boundary = Sphere::new(Point3::origin(), 2.0);
+    let boundary = Sphere::new(Point3::origin(), 2.0).unwrap();
     let mut sizes = Range::new(0.1, 0.2);
 
-    let spheres = spherical_cow::pack_spheres(boundary, &mut sizes);
+    let spheres = spherical_cow::pack_spheres(boundary, &mut sizes).unwrap();
 
     println!("Number of spheres: {}", spheres.len());
 }
