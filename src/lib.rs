@@ -494,7 +494,8 @@ fn identify_f_known() {
     let four_p = Sphere::new(Point3::new(0.06666667, 0.12316024, 0.6773287), 0.4).unwrap();
     let four_n = Sphere::new(Point3::new(0.06666667, 0.12316024, -0.6773287), 0.4).unwrap();
 
-    let found = identify_f::<Sphere>(&one, &two, &three, &container, &Vec::new(), 0.4).unwrap();
+    let mut found = Vec::new();
+    identify_f::<Sphere>(&one, &two, &three, &container, &mut found, &Vec::new(), 0.4).unwrap();
 
     println!("{:?}", found);
     assert!(found.contains(&four_p));
