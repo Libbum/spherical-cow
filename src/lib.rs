@@ -59,9 +59,10 @@
 #![warn(missing_docs)]
 #![feature(vec_remove_item)]
 
+extern crate float_cmp;
 extern crate nalgebra;
 extern crate rand;
-extern crate float_cmp;
+extern crate rayon;
 #[cfg(feature = "serde-1")]
 extern crate serde;
 
@@ -79,6 +80,7 @@ use std::iter::repeat;
 use shapes::Sphere;
 use float_cmp::ApproxEqRatio;
 use errors::SphericalCowError as Error;
+use rayon::prelude::*;
 
 /// The `Container` trait must be implemented for all shapes you wish to pack spheres into.
 /// Standard shapes such as spheres and cuboids already derrive this trait. More complicated
@@ -249,22 +251,31 @@ pub fn pack_spheres<C: Container, R: IndependentSample<f64>>(
     // Radius of new sphere to be added to the current front, taken from the input distribution
     let mut new_radius = size_distribution.ind_sample(&mut rng) as f32;
 
+    let mut set_v = Vec::new();
+    let mut set_f = Vec::new();
+
     'outer: while !front.is_empty() {
         // s₀ := s(c₀, r₀) picked at random from F
         let curr_sphere = rng.choose(&front).ok_or(Error::NoneFront)?.clone();
         // V := {s(c', r') ∈ S : d(c₀, c') ≤ r₀ + r' + 2r}
-        let set_v = spheres
-            .iter()
-            .cloned()
-            .filter(|s_dash| {
-                s_dash != &curr_sphere &&
-                    nalgebra::distance(&curr_sphere.center, &s_dash.center) <=
-                        curr_sphere.radius + s_dash.radius + 2. * new_radius
-            })
-            .collect::<Vec<_>>();
+        set_v.clear();
+        set_v.par_extend(spheres.par_iter().cloned().filter(|s_dash| {
+            s_dash != &curr_sphere
+                && nalgebra::distance(&curr_sphere.center, &s_dash.center)
+                    <= curr_sphere.radius + s_dash.radius + 2. * new_radius
+        }));
 
         for (s_i, s_j) in pairs(&set_v) {
-            let mut set_f = identify_f(&curr_sphere, s_i, s_j, container, &set_v, new_radius)?;
+            set_f.clear();
+            identify_f(
+                &curr_sphere,
+                s_i,
+                s_j,
+                container,
+                &mut set_f,
+                &set_v,
+                new_radius,
+            )?;
             if !set_f.is_empty() {
                 // Found at least one position to place the sphere,
                 // choose one and move on
@@ -351,10 +362,10 @@ fn identify_f<C: Container>(
     s_2: &Sphere,
     s_3: &Sphere,
     container: &C,
+    set_f: &mut Vec<Sphere>,
     set_v: &[Sphere],
     radius: f32,
-) -> Result<Vec<Sphere>, Error> {
-
+) -> Result<(), Error> {
     //The center points of s_1, s_2, s_3 are verticies of a tetrahedron,
     //and the distances d_1, d_2, d_3 can be defined as the distances from these points to
     //a fourth vertex s_4, whose coordinates x,y,z must be found. This satisfies the equations
@@ -410,7 +421,6 @@ fn identify_f<C: Container>(
     let dot_wt_2 = dot_wt.powi(2);
     let value_4d = 4. * value_d;
 
-    let mut f = Vec::new();
     // There is a possiblity of obtaining imaginary solutions in gamma,
     // so we must check this comparison. TODO: Would be nice to have
     // some quick way of verifying this configuration and deny it early.
@@ -432,14 +442,16 @@ fn identify_f<C: Container>(
         )?;
 
         // Make sure the spheres are bounded by the containing geometry and do not overlap any spheres in V
-        if container.contains(&s_4_positive) && !set_v.iter().any(|v| v.overlaps(&s_4_positive)) {
-            f.push(s_4_positive);
+        if container.contains(&s_4_positive) && !set_v.par_iter().any(|v| v.overlaps(&s_4_positive))
+        {
+            set_f.push(s_4_positive);
         }
-        if container.contains(&s_4_negative) && !set_v.iter().any(|v| v.overlaps(&s_4_negative)) {
-            f.push(s_4_negative);
+        if container.contains(&s_4_negative) && !set_v.par_iter().any(|v| v.overlaps(&s_4_negative))
+        {
+            set_f.push(s_4_negative);
         }
     }
-    Ok(f)
+    Ok(())
 }
 
 /// Calculates all possible pairs of a `set` of values.
