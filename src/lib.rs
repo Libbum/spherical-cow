@@ -259,11 +259,16 @@ pub fn pack_spheres<C: Container, R: IndependentSample<f64>>(
         let curr_sphere = rng.choose(&front).ok_or(Error::NoneFront)?.clone();
         // V := {s(c', r') ∈ S : d(c₀, c') ≤ r₀ + r' + 2r}
         set_v.clear();
-        set_v.par_extend(spheres.par_iter().cloned().filter(|s_dash| {
-            s_dash != &curr_sphere
-                && nalgebra::distance(&curr_sphere.center, &s_dash.center)
-                    <= curr_sphere.radius + s_dash.radius + 2. * new_radius
-        }));
+        set_v.par_extend(
+            spheres
+                .par_iter()
+                .filter(|&s_dash| {
+                    s_dash != &curr_sphere
+                        && nalgebra::distance(&curr_sphere.center, &s_dash.center)
+                            <= curr_sphere.radius + s_dash.radius + 2. * new_radius
+                })
+                .cloned(),
+        );
 
         for (s_i, s_j) in pairs(&set_v) {
             set_f.clear();
@@ -442,12 +447,10 @@ fn identify_f<C: Container>(
         )?;
 
         // Make sure the spheres are bounded by the containing geometry and do not overlap any spheres in V
-        if container.contains(&s_4_positive) && !set_v.par_iter().any(|v| v.overlaps(&s_4_positive))
-        {
+        if container.contains(&s_4_positive) && !set_v.iter().any(|v| v.overlaps(&s_4_positive)) {
             set_f.push(s_4_positive);
         }
-        if container.contains(&s_4_negative) && !set_v.par_iter().any(|v| v.overlaps(&s_4_negative))
-        {
+        if container.contains(&s_4_negative) && !set_v.iter().any(|v| v.overlaps(&s_4_negative)) {
             set_f.push(s_4_negative);
         }
     }
