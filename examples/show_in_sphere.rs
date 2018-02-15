@@ -11,6 +11,12 @@ use rand::distributions::Range;
 use nalgebra::{Point3, Translation3, UnitQuaternion, Vector3};
 
 fn main() {
+    // Pack spheres with radii between 0.1 and 0.2 into a spherical container of radius 2.
+    let boundary = Sphere::new(Point3::origin(), 2.0).unwrap();
+    let mut sizes = Range::new(0.1, 0.2);
+
+    let spheres = spherical_cow::pack_spheres(&boundary, &mut sizes).unwrap();
+
     // Setup viewing environment.
     let eye = Point3::new(3.5, 3.5, 3.5);
     let at = Point3::origin();
@@ -18,12 +24,6 @@ fn main() {
 
     let mut window = Window::new_with_size("Spherical Cow: Spheres in a sphere", 1920, 1080);
     window.set_light(Light::StickToCamera);
-
-    // Pack spheres with radii between 0.1 and 0.2 into a spherical container of radius 2.
-    let boundary = Sphere::new(Point3::origin(), 2.0).unwrap();
-    let mut sizes = Range::new(0.1, 0.2);
-
-    let spheres = spherical_cow::pack_spheres(&boundary, &mut sizes).unwrap();
 
     // Populate spheres into scene.
     for sphere in spheres.iter() {

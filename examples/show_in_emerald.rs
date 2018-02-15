@@ -53,15 +53,6 @@ impl Container for Emerald {
 
 
 fn main() {
-    // Setup viewing environment.
-    let eye = Point3::new(15., 15., 15.);
-    let at = Point3::origin();
-    let mut camera = ArcBall::new(eye, at);
-
-    let mut window =
-        Window::new_with_size("Spherical Cow: Spheres in an emerald trimesh", 1920, 1080);
-    window.set_light(Light::StickToCamera);
-
     // Load an object file from disk
     let data = Obj::<SimplePolygon>::load(&Path::new("examples/objects/emerald.obj")).unwrap();
     let points: Vec<Point3<f32>> = data.position
@@ -97,6 +88,16 @@ fn main() {
     let packed = PackedVolume::new(boundary, &mut sizes).unwrap();
 
     println!("Volume Fraction: {:.2}%", packed.volume_fraction() * 100.);
+
+    // Setup viewing environment.
+    let eye = Point3::new(15., 15., 15.);
+    let at = Point3::origin();
+    let mut camera = ArcBall::new(eye, at);
+
+    let mut window =
+        Window::new_with_size("Spherical Cow: Spheres in an emerald trimesh", 1920, 1080);
+    window.set_light(Light::StickToCamera);
+
 
     // Populate spheres into scene.
     for sphere in packed.spheres.iter() {

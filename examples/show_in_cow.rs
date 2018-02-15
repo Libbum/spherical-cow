@@ -1,18 +1,19 @@
 extern crate kiss3d;
 extern crate nalgebra;
-extern crate rand;
 extern crate obj;
+extern crate rand;
 extern crate spherical_cow;
 
 use kiss3d::camera::ArcBall;
 use kiss3d::window::Window;
 use kiss3d::light::Light;
-use spherical_cow::util::{trimesh_volume, ray_intersection_count};
-use spherical_cow::{PackedVolume, Container};
+use spherical_cow::util::{ray_intersection_count, trimesh_volume};
+use spherical_cow::{Container, PackedVolume};
 use rand::distributions::Range;
 use nalgebra::{Point3, Translation3};
 use obj::{Obj, SimplePolygon};
 use std::path::Path;
+use std::time::Instant;
 
 #[derive(Clone)]
 /// A simple struct that holds triangluar information obtained from an obj file.
@@ -48,17 +49,9 @@ impl Container for CowBox {
     }
 }
 
-
 fn main() {
-    // Setup viewing environment.
-    let eye = Point3::new(7., 7., 7.);
-    let at = Point3::origin();
-    let mut camera = ArcBall::new(eye, at);
-
-    let mut window = Window::new_with_size("Spherical Cow: Spheres in a cow", 1920, 1080);
-    window.set_light(Light::StickToCamera);
-
     // Load an object file from disk
+    println!("Loading cow object from disk...");
     let data = Obj::<SimplePolygon>::load(&Path::new("examples/objects/cow.obj")).unwrap();
     let points: Vec<Point3<f32>> = data.position
         .iter()
@@ -75,14 +68,30 @@ fn main() {
     }
 
     // This is our bounding trimesh of a cow.
-    let boundary = CowBox { triangles: triangles };
+    let boundary = CowBox {
+        triangles: triangles,
+    };
 
     // Pack spheres with relatively small radii to fit in the legs and horns.
-    // WARNING: This will take a while (as in 90 minutes) to generate!!!
+    // WARNING: This will take a while (as in 4 hours) to generate!!!
+    println!("Packing spheres into cow...");
+    let now = Instant::now();
     let mut sizes = Range::new(0.03, 0.05);
     let packed = PackedVolume::new(boundary, &mut sizes).unwrap();
+    println!(
+        "Done! Packing took {:.2} minutes.",
+        now.elapsed().as_secs() / 60
+    );
 
     println!("Volume Fraction: {:.2}%", packed.volume_fraction() * 100.);
+
+    // Setup viewing environment.
+    let eye = Point3::new(7., 7., 7.);
+    let at = Point3::origin();
+
+    let mut camera = ArcBall::new(eye, at);
+    let mut window = Window::new_with_size("Spherical Cow: Spheres in a cow", 1920, 1080);
+    window.set_light(Light::StickToCamera);
 
     // Populate spheres into scene.
     for sphere in packed.spheres.iter() {
