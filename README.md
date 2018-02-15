@@ -73,6 +73,12 @@ The reason this library was initially written was to optimise the layout of infl
 
 # Changelog
 
+- 0.1.2 (Unreleased)
+
+  - Small performance improvements.
+  - Add [itertools](https://github.com/bluss/rust-itertools) to simplify pair collection using `.collect_tuple()`.
+  - Added `statistics_emerald` as a benchmarking target.
+
 - 0.1.1
 
   - Complete error handling.

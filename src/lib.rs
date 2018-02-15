@@ -59,9 +59,10 @@
 #![warn(missing_docs)]
 #![feature(vec_remove_item)]
 
+extern crate float_cmp;
+extern crate itertools;
 extern crate nalgebra;
 extern crate rand;
-extern crate float_cmp;
 #[cfg(feature = "serde-1")]
 extern crate serde;
 
@@ -75,7 +76,7 @@ use nalgebra::Point3;
 use nalgebra::core::{Matrix, Matrix3};
 use rand::Rng;
 use rand::distributions::IndependentSample;
-use std::iter::repeat;
+use itertools::Itertools;
 use shapes::Sphere;
 use float_cmp::ApproxEqRatio;
 use errors::SphericalCowError as Error;
@@ -249,22 +250,26 @@ pub fn pack_spheres<C: Container, R: IndependentSample<f64>>(
     // Radius of new sphere to be added to the current front, taken from the input distribution
     let mut new_radius = size_distribution.ind_sample(&mut rng) as f32;
 
+    let mut set_v = Vec::new();
+    let mut set_f = Vec::new();
     'outer: while !front.is_empty() {
         // s₀ := s(c₀, r₀) picked at random from F
         let curr_sphere = rng.choose(&front).ok_or(Error::NoneFront)?.clone();
         // V := {s(c', r') ∈ S : d(c₀, c') ≤ r₀ + r' + 2r}
-        let set_v = spheres
+        set_v.clear();
+        set_v = spheres
             .iter()
             .cloned()
             .filter(|s_dash| {
-                s_dash != &curr_sphere &&
-                    nalgebra::distance(&curr_sphere.center, &s_dash.center) <=
-                        curr_sphere.radius + s_dash.radius + 2. * new_radius
+                s_dash != &curr_sphere
+                    && nalgebra::distance(&curr_sphere.center, &s_dash.center)
+                        <= curr_sphere.radius + s_dash.radius + 2. * new_radius
             })
             .collect::<Vec<_>>();
 
-        for (s_i, s_j) in pairs(&set_v) {
-            let mut set_f = identify_f(&curr_sphere, s_i, s_j, container, &set_v, new_radius)?;
+        for (s_i, s_j) in set_v.iter().tuple_combinations::<(&Sphere, &Sphere)>() {
+            set_f.clear();
+            identify_f(&mut set_f, &curr_sphere, s_i, s_j, container, &set_v, new_radius)?;
             if !set_f.is_empty() {
                 // Found at least one position to place the sphere,
                 // choose one and move on
@@ -304,8 +309,9 @@ fn init_spheres<C: Container>(radii: &[f32; 3], container: &C) -> Result<Vec<Sph
     let distance_b = radius_a + radius_c;
     let distance_a = radius_c + radius_b;
 
-    let x = (distance_b.powi(2) + distance_c.powi(2) - distance_a.powi(2)) / (2. * distance_c);
-    let y = (distance_b.powi(2) - x.powi(2)).sqrt();
+    let b_2 = distance_b.powi(2);
+    let x = (b_2 + distance_c.powi(2) - distance_a.powi(2)) / (2. * distance_c);
+    let y = (b_2 - x.powi(2)).sqrt();
 
     // Find incenter
     let perimeter = distance_a + distance_b + distance_c;
@@ -347,14 +353,14 @@ fn init_spheres<C: Container>(radii: &[f32; 3], container: &C) -> Result<Vec<Sph
 /// The set f has at most two elements, because there exist at most two spheres with
 /// `radius` in outer contact with `s_1`, `s_2` and `s_3` simultaneously.
 fn identify_f<C: Container>(
+    set_f: &mut Vec<Sphere>,
     s_1: &Sphere,
     s_2: &Sphere,
     s_3: &Sphere,
     container: &C,
     set_v: &[Sphere],
     radius: f32,
-) -> Result<Vec<Sphere>, Error> {
-
+) -> Result<(), Error> {
     //The center points of s_1, s_2, s_3 are verticies of a tetrahedron,
     //and the distances d_1, d_2, d_3 can be defined as the distances from these points to
     //a fourth vertex s_4, whose coordinates x,y,z must be found. This satisfies the equations
@@ -385,38 +391,32 @@ fn identify_f<C: Container>(
     let unitvector_t = cross_uv / nalgebra::norm(&cross_uv);
     let vector_w = -2. * s_1.center.coords;
 
-    let distance_a = (distance_24.powi(2) - distance_14.powi(2) + s_1.center.x.powi(2) +
-                          s_1.center.y.powi(2) + s_1.center.z.powi(2) -
-                          s_2.center.x.powi(2) -
-                          s_2.center.y.powi(2) - s_2.center.z.powi(2)) /
-        (2. * nalgebra::norm(&vector_u));
-    let distance_b = (distance_34.powi(2) - distance_14.powi(2) + s_1.center.x.powi(2) +
-                          s_1.center.y.powi(2) + s_1.center.z.powi(2) -
-                          s_3.center.x.powi(2) -
-                          s_3.center.y.powi(2) - s_3.center.z.powi(2)) /
-        (2. * nalgebra::norm(&vector_v));
-    let distance_c = distance_14.powi(2) - s_1.center.x.powi(2) - s_1.center.y.powi(2) -
-        s_1.center.z.powi(2);
+    let distance_c =
+        distance_14.powi(2) - s_1.center.x.powi(2) - s_1.center.y.powi(2) - s_1.center.z.powi(2);
+    let distance_a = (distance_24.powi(2) - distance_c - s_2.center.x.powi(2) - s_2.center.y.powi(2)
+        - s_2.center.z.powi(2)) / (2. * nalgebra::norm(&vector_u));
+    let distance_b = (distance_34.powi(2) - distance_c - s_3.center.x.powi(2) - s_3.center.y.powi(2)
+        - s_3.center.z.powi(2)) / (2. * nalgebra::norm(&vector_v));
 
     let dot_uv = nalgebra::dot(&unitvector_u, &unitvector_v);
     let dot_wt = nalgebra::dot(&vector_w, &unitvector_t);
     let dot_uw = nalgebra::dot(&unitvector_u, &vector_w);
     let dot_vw = nalgebra::dot(&unitvector_v, &vector_w);
 
-    let alpha = (distance_a - distance_b * dot_uv) / (1. - dot_uv.powi(2));
-    let beta = (distance_b - distance_a * dot_uv) / (1. - dot_uv.powi(2));
-    let value_d = alpha.powi(2) + beta.powi(2) + 2. * alpha * beta * dot_uv + alpha * dot_uw +
-        beta * dot_vw - distance_c;
-    let dot_wt_2 = dot_wt.powi(2);
-    let value_4d = 4. * value_d;
+    let denominator = 1. - dot_uv.powi(2);
+    let alpha = (distance_a - distance_b * dot_uv) / denominator;
+    let beta = (distance_b - distance_a * dot_uv) / denominator;
+    let value_d = alpha.powi(2) + beta.powi(2) + 2. * alpha * beta * dot_uv + alpha * dot_uw
+        + beta * dot_vw - distance_c;
 
-    let mut f = Vec::new();
     // There is a possiblity of obtaining imaginary solutions in gamma,
     // so we must check this comparison. TODO: Would be nice to have
     // some quick way of verifying this configuration and deny it early.
+    let dot_wt_2 = dot_wt.powi(2);
+    let value_4d = 4. * value_d;
     if dot_wt_2 > value_4d {
-        let gamma_pos = 0.5 * (-dot_wt + (dot_wt.powi(2) - 4. * value_d).sqrt());
-        let gamma_neg = 0.5 * (-dot_wt - (dot_wt.powi(2) - 4. * value_d).sqrt());
+        let gamma_pos = 0.5 * (-dot_wt + (dot_wt_2 - value_4d).sqrt());
+        let gamma_neg = 0.5 * (-dot_wt - (dot_wt_2 - value_4d).sqrt());
 
         let s_4_positive = Sphere::new(
             Point3::from_coordinates(
@@ -433,43 +433,19 @@ fn identify_f<C: Container>(
 
         // Make sure the spheres are bounded by the containing geometry and do not overlap any spheres in V
         if container.contains(&s_4_positive) && !set_v.iter().any(|v| v.overlaps(&s_4_positive)) {
-            f.push(s_4_positive);
+            set_f.push(s_4_positive);
         }
         if container.contains(&s_4_negative) && !set_v.iter().any(|v| v.overlaps(&s_4_negative)) {
-            f.push(s_4_negative);
+            set_f.push(s_4_negative);
         }
     }
-    Ok(f)
-}
-
-/// Calculates all possible pairs of a `set` of values.
-fn pairs(set: &[Sphere]) -> Vec<(&Sphere, &Sphere)> {
-    let n = set.len();
-
-    if n == 2 {
-        let mut minimal = Vec::new();
-        minimal.push((&set[0], &set[1]));
-        minimal
-    } else {
-        let mut vec_pairs = Vec::new();
-        if n > 2 {
-            // 0..n - m, but m = 2 and rust is non inclusive with its for loops
-            for k in 0..n - 1 {
-                let subset = &set[k + 1..n];
-                vec_pairs.append(&mut subset
-                    .iter()
-                    .zip(repeat(&set[k]).take(subset.len()))
-                    .collect::<Vec<_>>());
-            }
-        }
-        vec_pairs
-    }
+    Ok(())
 }
 
 #[test]
 fn init_spheres_err() {
     let container = Sphere::new(Point3::origin(), 0.1).unwrap();
-    assert!(init_spheres(&[10.,15.,20.], &container).is_err());
+    assert!(init_spheres(&[10., 15., 20.], &container).is_err());
 }
 
 #[test]
@@ -479,28 +455,13 @@ fn identify_f_known() {
     let three = Sphere::new(Point3::new(-0.70000005, -0.28112677, 0.0), 0.7).unwrap();
     let container = Sphere::new(Point3::origin(), 20.0).unwrap();
 
-    let four_p = Sphere::new(Point3::new(0.06666667, 0.12316024, 0.6773287), 0.4).unwrap();
-    let four_n = Sphere::new(Point3::new(0.06666667, 0.12316024, -0.6773287), 0.4).unwrap();
+    let four_p = Sphere::new(Point3::new(0.06666666, 0.12316025, 0.6773287), 0.4).unwrap();
+    let four_n = Sphere::new(Point3::new(0.06666666, 0.12316025, -0.6773287), 0.4).unwrap();
 
-    let found = identify_f::<Sphere>(&one, &two, &three, &container, &Vec::new(), 0.4).unwrap();
+    let mut found = Vec::new();
+    identify_f::<Sphere>(&mut found, &one, &two, &three, &container, &Vec::new(), 0.4).unwrap();
 
     println!("{:?}", found);
     assert!(found.contains(&four_p));
     assert!(found.contains(&four_n));
-}
-
-#[test]
-fn pairs_of_spheres() {
-    let one = Sphere::new(Point3::origin(), 1.0).unwrap();
-    let two = Sphere::new(Point3::new(1.0, 0.0, 0.0), 2.0).unwrap();
-    let three = Sphere::new(Point3::new(0.0, 1.0, 0.0), 3.0).unwrap();
-
-    let spheres = vec![one.clone(), two.clone(), three.clone()];
-    let pairs = pairs(&spheres);
-
-    let mut pair_iter = pairs.iter();
-    assert_eq!(pairs.len(), 3);
-    assert_eq!(pair_iter.next(), Some(&(&two, &one)));
-    assert_eq!(pair_iter.next(), Some(&(&three, &one)));
-    assert_eq!(pair_iter.next(), Some(&(&three, &two)));
 }

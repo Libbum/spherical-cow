@@ -1,12 +1,12 @@
 //! If serde is enabled we need to have the ability to serialize and deserialize all objects in the library.
 
-use serde::{Serialize, Serializer, Deserialize, Deserializer};
-use serde::de::{self, Visitor, SeqAccess, MapAccess};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::de::{self, MapAccess, SeqAccess, Visitor};
 use serde::ser::SerializeStruct;
 use std::fmt;
 use std::marker::PhantomData;
 
-use shapes::{Sphere, Cuboid};
+use shapes::{Cuboid, Sphere};
 use PackedVolume;
 use Container;
 
@@ -98,12 +98,10 @@ impl<'de> Deserialize<'de> for Sphere {
             where
                 V: SeqAccess<'de>,
             {
-                let center = seq.next_element()?.ok_or_else(
-                    || de::Error::invalid_length(0, &self),
-                )?;
-                let radius = seq.next_element()?.ok_or_else(
-                    || de::Error::invalid_length(1, &self),
-                )?;
+                let center = seq.next_element()?
+                    .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+                let radius = seq.next_element()?
+                    .ok_or_else(|| de::Error::invalid_length(1, &self))?;
                 Ok(Sphere::new(center, radius).map_err(de::Error::custom)?)
             }
 
@@ -191,9 +189,8 @@ impl<'de> Deserialize<'de> for Cuboid {
             where
                 V: SeqAccess<'de>,
             {
-                let half_extents = seq.next_element()?.ok_or_else(
-                    || de::Error::invalid_length(0, &self),
-                )?;
+                let half_extents = seq.next_element()?
+                    .ok_or_else(|| de::Error::invalid_length(0, &self))?;
                 Ok(Cuboid::from_vec(half_extents).map_err(de::Error::custom)?)
             }
 
@@ -212,9 +209,8 @@ impl<'de> Deserialize<'de> for Cuboid {
                         }
                     }
                 }
-                let half_extents = half_extents.ok_or_else(
-                    || de::Error::missing_field("half_extents"),
-                )?;
+                let half_extents =
+                    half_extents.ok_or_else(|| de::Error::missing_field("half_extents"))?;
                 Ok(Cuboid::from_vec(half_extents).map_err(de::Error::custom)?)
             }
         }
@@ -280,12 +276,10 @@ impl<'de, C: Container + Deserialize<'de>> Deserialize<'de> for PackedVolume<C> 
             where
                 V: SeqAccess<'de>,
             {
-                let spheres = seq.next_element()?.ok_or_else(
-                    || de::Error::invalid_length(0, &self),
-                )?;
-                let container = seq.next_element()?.ok_or_else(
-                    || de::Error::invalid_length(1, &self),
-                )?;
+                let spheres = seq.next_element()?
+                    .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+                let container = seq.next_element()?
+                    .ok_or_else(|| de::Error::invalid_length(1, &self))?;
                 Ok(PackedVolume::from_vec(spheres, container))
             }
 
@@ -312,9 +306,7 @@ impl<'de, C: Container + Deserialize<'de>> Deserialize<'de> for PackedVolume<C> 
                     }
                 }
                 let spheres = spheres.ok_or_else(|| de::Error::missing_field("spheres"))?;
-                let container = container.ok_or_else(
-                    || de::Error::missing_field("container"),
-                )?;
+                let container = container.ok_or_else(|| de::Error::missing_field("container"))?;
                 Ok(PackedVolume::from_vec(spheres, container))
             }
         }

@@ -17,7 +17,9 @@ impl Cuboid {
         if extent_x <= 0.0 || extent_y <= 0.0 || extent_z <= 0.0 {
             Err(Error::NegativeExtents)
         } else {
-            Ok(Cuboid { half_extents: vec![extent_x, extent_y, extent_z] })
+            Ok(Cuboid {
+                half_extents: vec![extent_x, extent_y, extent_z],
+            })
         }
     }
 
@@ -26,7 +28,9 @@ impl Cuboid {
         if half_extents.iter().any(|he| *he <= 0.0) {
             Err(Error::NegativeExtents)
         } else {
-            Ok(Cuboid { half_extents: half_extents })
+            Ok(Cuboid {
+                half_extents: half_extents,
+            })
         }
     }
 }
@@ -38,9 +42,7 @@ impl Container for Cuboid {
         self.half_extents
             .iter()
             .zip(sphere.center.coords.iter())
-            .all(|(extent, sphere_extent)| {
-                sphere_extent.abs() + sphere.radius <= *extent
-            })
+            .all(|(extent, sphere_extent)| sphere_extent.abs() + sphere.radius <= *extent)
     }
 
     /// Calculates the volume of this cuboid in normalised units.

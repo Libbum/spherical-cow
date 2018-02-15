@@ -53,9 +53,9 @@ pub fn trimesh_volume(triangles: &[(Point3<f32>, Point3<f32>, Point3<f32>)]) -> 
         .iter()
         .map(|triangle| {
             let &(a, b, c) = triangle;
-            sixth *
-                (-c.x * b.y * a.z + b.x * c.y * a.z + c.x * a.y * b.z - a.x * c.y * b.z -
-                     b.x * a.y * c.z + a.x * b.y * c.z)
+            sixth
+                * (-c.x * b.y * a.z + b.x * c.y * a.z + c.x * a.y * b.z - a.x * c.y * b.z
+                    - b.x * a.y * c.z + a.x * b.y * c.z)
         })
         .sum()
 }

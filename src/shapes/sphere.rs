@@ -54,10 +54,7 @@ impl fmt::Display for Sphere {
         write!(
             f,
             "[{{{}, {}, {}}}, {}]",
-            self.center.coords.x,
-            self.center.coords.y,
-            self.center.coords.z,
-            self.radius
+            self.center.coords.x, self.center.coords.y, self.center.coords.z, self.radius
         )
     }
 }
