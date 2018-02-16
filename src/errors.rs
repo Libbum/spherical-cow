@@ -62,7 +62,10 @@ fn error_display_negative_radius() {
     use shapes::Sphere;
 
     if let Err(err) = Sphere::new(Point3::origin(), -1.) {
-        assert_eq!(format!("{} {}", err, err.description()), format!("Supplied radius is negative. negative radius"));
+        assert_eq!(
+            format!("{} {}", err, err.description()),
+            format!("Supplied radius is negative. negative radius")
+        );
     } else {
         panic!("Sending a negative radius to the sphere creation function yielded an Ok result");
     }
@@ -73,9 +76,14 @@ fn error_display_negative_extent() {
     use shapes::Cuboid;
 
     if let Err(err) = Cuboid::new(1., 1., -1.) {
-        assert_eq!(format!("{} {}", err, err.description()), format!("A supplied half extent is negative. negative half extent"));
+        assert_eq!(
+            format!("{} {}", err, err.description()),
+            format!("A supplied half extent is negative. negative half extent")
+        );
     } else {
-        panic!("Sending a negative half extent to the cuboid creation function yielded an Ok result");
+        panic!(
+            "Sending a negative half extent to the cuboid creation function yielded an Ok result"
+        );
     }
 }
 
@@ -88,7 +96,10 @@ fn error_display_containment() {
     let container = Sphere::new(Point3::origin(), 0.1).unwrap();
 
     if let Err(err) = init_spheres(&[10., 15., 20.], &container) {
-        assert_eq!(format!("{} {}", err, err.description()), format!("Sphere is not contained within bounding geometry. outside bounding geometry"));
+        assert_eq!(
+            format!("{} {}", err, err.description()),
+            format!("Sphere is not contained within bounding geometry. outside bounding geometry")
+        );
     } else {
         panic!("Testing a sphere which is not contained in a containter yielded an Ok result");
     }
@@ -96,20 +107,26 @@ fn error_display_containment() {
 
 #[test]
 fn error_display_empty_values() {
-    use rand::{Rng, thread_rng};
+    use rand::{thread_rng, Rng};
     use shapes::Sphere;
 
     let empty_vec: Vec<Sphere> = Vec::new();
     let mut rng = thread_rng();
 
     if let Err(err) = rng.choose(&empty_vec).ok_or(SphericalCowError::NoneSetF) {
-        assert_eq!(format!("{} {}", err, err.description()), format!("Returned none when choosing value from set f. none from set f"));
+        assert_eq!(
+            format!("{} {}", err, err.description()),
+            format!("Returned none when choosing value from set f. none from set f")
+        );
     } else {
         panic!("set f was empty when it should not have been");
     }
 
     if let Err(err) = rng.choose(&empty_vec).ok_or(SphericalCowError::NoneFront) {
-        assert_eq!(format!("{} {}", err, err.description()), format!("Returned none when choosing value from front. none from front"));
+        assert_eq!(
+            format!("{} {}", err, err.description()),
+            format!("Returned none when choosing value from front. none from front")
+        );
     } else {
         panic!("front was empty when it should not have been");
     }

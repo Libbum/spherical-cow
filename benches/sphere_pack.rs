@@ -10,14 +10,14 @@ use rand::distributions::Range;
 use nalgebra::Point3;
 
 fn criterion_benchmark(c: &mut Criterion) {
-    c.bench_function("sphere 2, 0.1-0.2", |b| {
+    c.sample_size(10).bench_function_over_inputs("sphere [2, 2.5, 3, 3.5, 4], 0.1-0.2", |b, &&radius| {
         b.iter(|| {
-            let boundary = Sphere::new(Point3::origin(), 2.0).unwrap();
+            let boundary = Sphere::new(Point3::origin(), radius).unwrap();
             let mut sizes = Range::new(0.1, 0.2);
 
             let _spheres = spherical_cow::pack_spheres(&boundary, &mut sizes).unwrap();
         })
-    });
+    }, &[2., 2.5, 3., 3.5, 4.]);
 }
 
 criterion_group!(benches, criterion_benchmark);
