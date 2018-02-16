@@ -25,6 +25,11 @@ clippy = {version = "0.0.180", optional = true}
 kiss3d = "0.12"
 obj = "0.8.1"
 serde_json = "1.0"
+criterion = "0.1"
+
+[[bench]]
+name = "sphere_pack"
+harness = false
 
 [badges]
 travis-ci = { repository = "Libbum/spherical-cow", branch = "master" }
