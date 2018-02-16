@@ -75,9 +75,9 @@ The reason this library was initially written was to optimise the layout of infl
 
 - 0.1.2 (Unreleased)
 
-  - Small performance improvements.
+  - Small performance improvements via algebraic simplifications and minimising vector allocations.
   - Add [itertools](https://github.com/bluss/rust-itertools) to simplify pair collection using `.collect_tuple()`.
-  - Added `statistics_emerald` as a benchmarking target.
+  - Added [sphere_pack](benches/sphere_pack.rs) benchmarking target using [criterion](https://github.com/japaric/criterion.rs).
 
 - 0.1.1
 
