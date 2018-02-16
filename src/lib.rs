@@ -77,7 +77,8 @@ use nalgebra::core::{Matrix, Matrix3};
 use rand::Rng;
 use rand::distributions::IndependentSample;
 use itertools::Itertools;
-use shapes::Sphere;
+use shapes::{Cuboid, Sphere};
+//use std::collections::LinkedList;
 use float_cmp::ApproxEqRatio;
 use errors::SphericalCowError as Error;
 
@@ -442,6 +443,86 @@ fn identify_f<C: Container>(
         }
     }
     Ok(())
+}
+
+/// A bounding box is a cuboid which has the same extents as the maximum extents of
+/// an enclosed object.
+trait BoundingBox {
+    /// Returns a cuboid containing the current object.
+    fn bb(&self) -> Result<Cuboid, Error>;
+    /// The bottom, left, back coordinate of the `BoundingBox`.
+    fn bb_lower_bound(&self) -> Point3<f32>;
+    /// The top, right, front coordinate of the `BoundingBox`.
+    fn bb_upper_bound(&self) -> Point3<f32>;
+}
+
+impl BoundingBox for Sphere {
+    /// Returns a cuboid containing the current sphere.
+    fn bb(&self) -> Result<Cuboid, Error> {
+        // A spheres radius is equal to all of the cuboids half extents
+        let bounding_box = Cuboid::new(self.radius, self.radius, self.radius)?;
+        Ok(bounding_box)
+    }
+
+    /// The bottom, left, back coordinate of the Sphere's `BoundingBox`.
+    fn bb_lower_bound(&self) -> Point3<f32> {
+        Point3::new(self.center.x-self.radius,self.center.y-self.radius,self.center.z-self.radius)
+    }
+
+    /// The top, right, front coordinate of the Sphere's `BoundingBox`.
+    fn bb_upper_bound(&self) -> Point3<f32> {
+        Point3::new(self.center.x+self.radius,self.center.y+self.radius,self.center.z+self.radius)
+    }
+}
+
+/// WIP. Will replace the `set_v` neighbour O(n^2) lookup with an O(n) method.
+fn dcell(_set_v: &mut Vec<Sphere>, spheres: &[Sphere]) {
+    // Using vectors instead of linked lists for now, to see if that's possible or not.
+    let nx = (5-0)/1;
+    let ny = (5-0)/1;
+    let mut x_lists: Vec<Vec<&Sphere>> = Vec::with_capacity(nx);
+    for _ in 0..nx {
+        x_lists.push(Vec::new());
+    }
+    let mut y_lists: Vec<Vec<&Sphere>> = Vec::with_capacity(ny);
+    for _ in 0..ny {
+        y_lists.push(Vec::new());
+    }
+    for sphere in spheres.iter() {
+        let lower = sphere.bb_lower_bound();
+        let ix = ((lower.x-0.)/1.) as usize;
+        let iy = ((lower.y-0.)/1.) as usize;
+        x_lists[ix].push(&sphere);
+        y_lists[iy].push(&sphere);
+        println!("ix {}, iy {}", ix + 1, iy + 1);
+    }
+    println!("{:?}", x_lists);
+    println!("{:?}", y_lists);
+}
+
+#[test]
+fn dcell_2d() {
+    let mut spheres = Vec::new();
+    spheres.push(Sphere::new(Point3::new(3.7, 3.0, 0.), 0.7).unwrap());
+    spheres.push(Sphere::new(Point3::new(1.5, 2.8, 0.), 0.3).unwrap());
+    spheres.push(Sphere::new(Point3::new(1.4, 4.1, 0.), 0.7).unwrap());
+    spheres.push(Sphere::new(Point3::new(3.1, 1.6, 0.), 0.2).unwrap());
+    spheres.push(Sphere::new(Point3::new(2.7, 2.7, 0.), 0.6).unwrap());
+    spheres.push(Sphere::new(Point3::new(3.7, 0.3, 0.), 0.7).unwrap());
+    spheres.push(Sphere::new(Point3::new(1.8, 1.8, 0.), 0.7).unwrap());
+    spheres.push(Sphere::new(Point3::new(0.3, 3.1, 0.), 0.7).unwrap());
+    spheres.push(Sphere::new(Point3::new(3.7, 4.8, 0.), 0.2).unwrap());
+    spheres.push(Sphere::new(Point3::new(2.0, 3.4, 0.), 0.4).unwrap());
+    spheres.push(Sphere::new(Point3::new(4.2, 4.1, 0.), 0.4).unwrap());
+    spheres.push(Sphere::new(Point3::new(2.5, 1.0, 0.), 0.4).unwrap());
+    spheres.push(Sphere::new(Point3::new(0.5, 0.8, 0.), 0.5).unwrap());
+    spheres.push(Sphere::new(Point3::new(3.6, 2.2, 0.), 0.5).unwrap());
+    spheres.push(Sphere::new(Point3::new(0.2, 4.6, 0.), 0.6).unwrap());
+
+    let mut set_v = Vec::new();
+    dcell(&mut set_v, &spheres);
+
+    assert!(false);
 }
 
 #[test]
