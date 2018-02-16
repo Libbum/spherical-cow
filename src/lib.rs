@@ -131,7 +131,9 @@ impl<C: Container> PackedVolume<C> {
     /// Calculates the volume fraction ν = Vs/V: the volume of all spheres packed into a container
     /// divided by the volume of said container.
     ///
-    /// The higest possible volume fraction for any random radii distribution is currently unknown to
+    /// The [Kepler Conjecture](http://mathworld.wolfram.com/KeplerConjecture.html) suggests that the
+    /// densest possible volume fraction for equal sized spheres is ~74.05%. However, the higest possible
+    /// volume fraction for any random radii distribution is currently unknown to
     /// mathematicians. The algorithm implemented herin obtains 59.29% in a cube with side lengths of
     /// 90 with sphere radii between 0.01 and 0.02, compared with a long standing and well known
     /// [geometric compression algorithm](10.1016/j.powtec.2005.04.055) which achieved 52.89%.
