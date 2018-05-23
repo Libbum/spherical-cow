@@ -39,12 +39,12 @@ extern crate rand;
 extern crate spherical_cow;
 
 use spherical_cow::shapes::Sphere;
-use rand::distributions::Range;
+use rand::distributions::Uniform;
 use nalgebra::Point3;
 
 fn main() {
     let boundary = Sphere::new(Point3::origin(), 2.0).unwrap();
-    let mut sizes = Range::new(0.1, 0.2);
+    let mut sizes = Uniform::new(0.1, 0.2);
 
     let spheres = spherical_cow::pack_spheres(boundary, &mut sizes).unwrap();
 
@@ -78,6 +78,7 @@ The reason this library was initially written was to optimise the layout of infl
   - Small performance improvements.
   - Add [itertools](https://github.com/bluss/rust-itertools) to simplify pair collection using `.collect_tuple()`.
   - Added `statistics_emerald` as a benchmarking target.
+  - Upgrade to [rand v0.5](https://github.com/rust-lang-nursery/rand) which now uses HC-128: increasing our efficiency.
 
 - 0.1.1
 

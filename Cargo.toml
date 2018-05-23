@@ -14,7 +14,7 @@ dev = ["clippy"]
 serde-1 = ["serde", "nalgebra/serde-serialize"]
 
 [dependencies]
-rand = "0.4"
+rand = "0.5"
 nalgebra = "0.13"
 float-cmp = "0.2"
 itertools = "0.7"

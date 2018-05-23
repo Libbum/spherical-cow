@@ -32,14 +32,14 @@
 //!
 //! use spherical_cow::shapes::Sphere;
 //! use spherical_cow::PackedVolume;
-//! use rand::distributions::Range;
+//! use rand::distributions::Uniform;
 //! use nalgebra::Point3;
 //!
 //! fn main() {
 //!     // Pack spheres with radii between 0.05 and 0.1 into a spherical container of radius 2,
 //!     // output quantitative analysis data.
 //!     let boundary = Sphere::new(Point3::origin(), 2.0).unwrap();
-//!     let mut sizes = Range::new(0.05, 0.1);
+//!     let mut sizes = Uniform::new(0.05, 0.1);
 //!
 //!     let packed = PackedVolume::new(boundary, &mut sizes).unwrap();
 //!
@@ -75,7 +75,7 @@ mod serialization;
 use nalgebra::Point3;
 use nalgebra::core::{Matrix, Matrix3};
 use rand::Rng;
-use rand::distributions::IndependentSample;
+use rand::distributions::Distribution;
 use itertools::Itertools;
 use shapes::Sphere;
 use float_cmp::ApproxEqRatio;
@@ -107,11 +107,11 @@ pub struct PackedVolume<C> {
 impl<C: Container> PackedVolume<C> {
     /// Creates a new `PackedVolume` by calling [pack_spheres](fn.pack_spheres.html) with a given distribution of sphere sizes
     /// and a `container` to pack into.
-    pub fn new<R: IndependentSample<f64>>(
+    pub fn new<D: Distribution<f64>>(
         container: C,
-        mut size_distribution: &mut R,
+        mut size_distribution: &mut D,
     ) -> Result<PackedVolume<C>, Error> {
-        let spheres = pack_spheres::<C, R>(&container, &mut size_distribution)?;
+        let spheres = pack_spheres::<C, D>(&container, &mut size_distribution)?;
         Ok(PackedVolume::<C> {
             spheres: spheres,
             container: container,
@@ -222,23 +222,23 @@ impl<C: Container> PackedVolume<C> {
 /// Requires a `containter` and a distribution of radii sizes.
 ///
 /// Generally, a uniform distribution is chosen, although this library
-/// accepts any distribution implementing `rand`s `IndependentSample` trait.
+/// accepts any distribution implementing `rand`s `Distribution` trait.
 /// This [example](https://github.com/Libbum/spherical-cow/blob/master/examples/count_sphere_normal.rs)
 /// uses a normally distributed radii range. Note that the packing is sub optimal in this case, and
 /// attention must be paid when using such distributions that radii values do not become negagive.
-pub fn pack_spheres<C: Container, R: IndependentSample<f64>>(
+pub fn pack_spheres<C: Container, D: Distribution<f64>>(
     container: &C,
-    size_distribution: &mut R,
+    size_distribution: &mut D,
 ) -> Result<Vec<Sphere>, Error> {
-    // IndependentSample is already derrived for all distributions in `rand` with f64,
+    // Distribution is already derrived for all distributions in `rand` with f64,
     // so we just downsample here instead of implementing traits on f32 for everything.
     let mut rng = rand::thread_rng();
 
     // Radii of three initial spheres, taken from the input distribution
     let init_radii: [f32; 3] = [
-        size_distribution.ind_sample(&mut rng) as f32,
-        size_distribution.ind_sample(&mut rng) as f32,
-        size_distribution.ind_sample(&mut rng) as f32,
+        size_distribution.sample(&mut rng) as f32,
+        size_distribution.sample(&mut rng) as f32,
+        size_distribution.sample(&mut rng) as f32,
     ];
 
     // S := {s₁, s₂, s₃}
@@ -248,7 +248,7 @@ pub fn pack_spheres<C: Container, R: IndependentSample<f64>>(
     let mut front = spheres.clone();
 
     // Radius of new sphere to be added to the current front, taken from the input distribution
-    let mut new_radius = size_distribution.ind_sample(&mut rng) as f32;
+    let mut new_radius = size_distribution.sample(&mut rng) as f32;
 
     let mut set_v = Vec::new();
     let mut set_f = Vec::new();
@@ -276,7 +276,7 @@ pub fn pack_spheres<C: Container, R: IndependentSample<f64>>(
                 let s_new = rng.choose(&set_f).ok_or(Error::NoneSetF)?;
                 front.push(s_new.clone());
                 spheres.push(s_new.clone());
-                new_radius = size_distribution.ind_sample(&mut rng) as f32;
+                new_radius = size_distribution.sample(&mut rng) as f32;
                 continue 'outer;
             }
         }

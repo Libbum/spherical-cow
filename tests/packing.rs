@@ -8,12 +8,12 @@ use nalgebra::core::Matrix3;
 use spherical_cow::shapes::Sphere;
 use spherical_cow::*;
 use float_cmp::ApproxEqUlps;
-use rand::distributions::Range;
+use rand::distributions::Uniform;
 
 #[test]
 fn packed_volume_create_ok() {
     let boundary = Sphere::new(Point3::origin(), 2.0).unwrap();
-    let mut sizes = Range::new(0.3, 0.5);
+    let mut sizes = Uniform::new(0.3, 0.5);
 
     assert!(PackedVolume::new(boundary, &mut sizes).is_ok());
 }
@@ -23,7 +23,7 @@ fn packed_volume_create_err() {
     // Since the boundary is so small, this will throw an Uncontained error
     // in `init_spheres`.
     let boundary = Sphere::new(Point3::origin(), 0.001).unwrap();
-    let mut sizes = Range::new(0.3, 0.5);
+    let mut sizes = Uniform::new(0.3, 0.5);
 
     assert!(PackedVolume::new(boundary, &mut sizes).is_err());
 }

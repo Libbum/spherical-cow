@@ -4,14 +4,14 @@ extern crate spherical_cow;
 
 use spherical_cow::shapes::Sphere;
 use spherical_cow::PackedVolume;
-use rand::distributions::Range;
+use rand::distributions::Uniform;
 use nalgebra::Point3;
 
 fn main() {
     // Pack spheres with radii between 0.05 and 0.1 into a spherical container of radius 2,
     // output quantitative analysis data.
     let boundary = Sphere::new(Point3::origin(), 2.0).unwrap();
-    let mut sizes = Range::new(0.05, 0.1);
+    let mut sizes = Uniform::new(0.05, 0.1);
 
     let packed = PackedVolume::new(boundary, &mut sizes).unwrap();
 

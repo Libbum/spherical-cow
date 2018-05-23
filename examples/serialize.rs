@@ -5,13 +5,13 @@ extern crate serde_json;
 
 use spherical_cow::shapes::Cuboid;
 use spherical_cow::PackedVolume;
-use rand::distributions::Range;
+use rand::distributions::Uniform;
 // NOTE: You must run this example with the "serde-1" feature enabled
 // cargo run --release --features serde-1 --example serialize
 fn main() {
     // We'll pack some large-ish spheres into a cuboid to show serialization
     // of both shape types, then serialize the resultant PackedVolume.
-    let mut sizes = Range::new(0.5, 0.6);
+    let mut sizes = Uniform::new(0.5, 0.6);
     let cuboid = Cuboid::new(1.5, 2., 1.7).unwrap();
 
     let packed = PackedVolume::new(cuboid, &mut sizes).unwrap();

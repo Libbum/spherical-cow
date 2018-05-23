@@ -7,13 +7,13 @@ use kiss3d::camera::ArcBall;
 use kiss3d::window::Window;
 use kiss3d::light::Light;
 use spherical_cow::shapes::Cuboid;
-use rand::distributions::Range;
+use rand::distributions::Uniform;
 use nalgebra::{Point3, Translation3, UnitQuaternion, Vector3};
 
 fn main() {
     // Pack spheres with radii between 0.05 and 0.1 into a cube with a halfspace of 1.5.
     let boundary = Cuboid::new(1.5, 1.5, 1.5).unwrap();
-    let mut sizes = Range::new(0.05, 0.1);
+    let mut sizes = Uniform::new(0.05, 0.1);
 
     let spheres = spherical_cow::pack_spheres(&boundary, &mut sizes).unwrap();
 

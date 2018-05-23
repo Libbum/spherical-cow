@@ -5,7 +5,7 @@ extern crate spherical_cow;
 
 use spherical_cow::util::{trimesh_volume, ray_intersection_count};
 use spherical_cow::{PackedVolume, Container};
-use rand::distributions::Range;
+use rand::distributions::Uniform;
 use nalgebra::Point3;
 use obj::{Obj, SimplePolygon};
 use std::path::Path;
@@ -72,7 +72,7 @@ fn main() {
     let boundary = Emerald { triangles: triangles };
 
     // Pack spheres with radii between 0.3 and 0.5.
-    let mut sizes = Range::new(0.3, 0.5);
+    let mut sizes = Uniform::new(0.3, 0.5);
     let packed = PackedVolume::new(boundary, &mut sizes).unwrap();
 
     println!("Volume Fraction: {:.2}%", packed.volume_fraction() * 100.);

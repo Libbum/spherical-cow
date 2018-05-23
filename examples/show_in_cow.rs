@@ -9,7 +9,7 @@ use kiss3d::window::Window;
 use kiss3d::light::Light;
 use spherical_cow::util::{ray_intersection_count, trimesh_volume};
 use spherical_cow::{Container, PackedVolume};
-use rand::distributions::Range;
+use rand::distributions::Uniform;
 use nalgebra::{Point3, Translation3};
 use obj::{Obj, SimplePolygon};
 use std::path::Path;
@@ -76,7 +76,7 @@ fn main() {
     // WARNING: This will take a while (as in 4 hours) to generate!!!
     println!("Packing spheres into cow...");
     let now = Instant::now();
-    let mut sizes = Range::new(0.03, 0.05);
+    let mut sizes = Uniform::new(0.03, 0.05);
     let packed = PackedVolume::new(boundary, &mut sizes).unwrap();
     println!(
         "Done! Packing took {:.2} minutes.",
