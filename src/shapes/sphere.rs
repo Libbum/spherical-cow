@@ -1,8 +1,8 @@
+use errors::SphericalCowError as Error;
 use nalgebra::{distance, Point3};
 use std::f32::consts::FRAC_PI_3;
 use std::fmt;
 use Container;
-use errors::SphericalCowError as Error;
 
 #[derive(PartialEq, Debug, Clone)]
 /// Constructs a sphere located at `center` in Euclidean space with a given `radius`.
@@ -19,10 +19,7 @@ impl Sphere {
         if radius <= 0.0 {
             Err(Error::NegativeRadius)
         } else {
-            Ok(Sphere {
-                center: center,
-                radius: radius,
-            })
+            Ok(Sphere { center, radius })
         }
     }
 

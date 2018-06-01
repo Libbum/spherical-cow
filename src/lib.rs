@@ -54,8 +54,6 @@
 //! The method implemented herein is an advancing front algorithm from
 //! Valera *et al.*, [Computational Particle Mechanics 2, 161 (2015)](https://doi.org/10.1007/s40571-015-0045-8).
 
-#![cfg_attr(feature = "dev", feature(plugin))]
-#![cfg_attr(feature = "dev", plugin(clippy))]
 #![warn(missing_docs)]
 #![feature(vec_remove_item)]
 
@@ -66,20 +64,20 @@ extern crate rand;
 #[cfg(feature = "serde-1")]
 extern crate serde;
 
-pub mod shapes;
-pub mod util;
 pub mod errors;
 #[cfg(feature = "serde-1")]
 mod serialization;
+pub mod shapes;
+pub mod util;
 
-use nalgebra::Point3;
-use nalgebra::core::{Matrix, Matrix3};
-use rand::Rng;
-use rand::distributions::Distribution;
-use itertools::Itertools;
-use shapes::Sphere;
-use float_cmp::ApproxEqRatio;
 use errors::SphericalCowError as Error;
+use float_cmp::ApproxEqRatio;
+use itertools::Itertools;
+use nalgebra::core::{Matrix, Matrix3};
+use nalgebra::Point3;
+use rand::distributions::Distribution;
+use rand::Rng;
+use shapes::Sphere;
 
 /// The `Container` trait must be implemented for all shapes you wish to pack spheres into.
 /// Standard shapes such as spheres and cuboids already derrive this trait. More complicated
@@ -112,20 +110,14 @@ impl<C: Container> PackedVolume<C> {
         mut size_distribution: &mut D,
     ) -> Result<PackedVolume<C>, Error> {
         let spheres = pack_spheres::<C, D>(&container, &mut size_distribution)?;
-        Ok(PackedVolume::<C> {
-            spheres: spheres,
-            container: container,
-        })
+        Ok(PackedVolume::<C> { spheres, container })
     }
 
     /// Creates a `PackedVolume` from a pre calculated cluster of `spheres`. Useful for gathering statistics from
     /// packings generated elsewhere for comparison to the current algorithm. Also used for deserialization.
     /// This method is currently unchecked, so use with caution.
     pub fn from_vec(spheres: Vec<Sphere>, container: C) -> PackedVolume<C> {
-        PackedVolume::<C> {
-            spheres: spheres,
-            container: container,
-        }
+        PackedVolume::<C> { spheres, container }
     }
 
     /// Calculates the volume fraction ν = Vs/V: the volume of all spheres packed into a container
@@ -271,7 +263,15 @@ pub fn pack_spheres<C: Container, D: Distribution<f64>>(
 
         for (s_i, s_j) in set_v.iter().tuple_combinations::<(&Sphere, &Sphere)>() {
             set_f.clear();
-            identify_f(&mut set_f, &curr_sphere, s_i, s_j, container, &set_v, new_radius)?;
+            identify_f(
+                &mut set_f,
+                &curr_sphere,
+                s_i,
+                s_j,
+                container,
+                &set_v,
+                new_radius,
+            )?;
             if !set_f.is_empty() {
                 // Found at least one position to place the sphere,
                 // choose one and move on
@@ -395,9 +395,15 @@ fn identify_f<C: Container>(
 
     let distance_c =
         distance_14.powi(2) - s_1.center.x.powi(2) - s_1.center.y.powi(2) - s_1.center.z.powi(2);
-    let distance_a = (distance_24.powi(2) - distance_c - s_2.center.x.powi(2) - s_2.center.y.powi(2)
+    let distance_a = (distance_24.powi(2)
+        - distance_c
+        - s_2.center.x.powi(2)
+        - s_2.center.y.powi(2)
         - s_2.center.z.powi(2)) / (2. * nalgebra::norm(&vector_u));
-    let distance_b = (distance_34.powi(2) - distance_c - s_3.center.x.powi(2) - s_3.center.y.powi(2)
+    let distance_b = (distance_34.powi(2)
+        - distance_c
+        - s_3.center.x.powi(2)
+        - s_3.center.y.powi(2)
         - s_3.center.z.powi(2)) / (2. * nalgebra::norm(&vector_v));
 
     let dot_uv = nalgebra::dot(&unitvector_u, &unitvector_v);
@@ -408,8 +414,9 @@ fn identify_f<C: Container>(
     let denominator = 1. - dot_uv.powi(2);
     let alpha = (distance_a - distance_b * dot_uv) / denominator;
     let beta = (distance_b - distance_a * dot_uv) / denominator;
-    let value_d = alpha.powi(2) + beta.powi(2) + 2. * alpha * beta * dot_uv + alpha * dot_uw
-        + beta * dot_vw - distance_c;
+    let value_d =
+        alpha.powi(2) + beta.powi(2) + 2. * alpha * beta * dot_uv + alpha * dot_uw + beta * dot_vw
+            - distance_c;
 
     // There is a possiblity of obtaining imaginary solutions in gamma,
     // so we must check this comparison. TODO: Would be nice to have

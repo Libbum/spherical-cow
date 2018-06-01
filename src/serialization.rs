@@ -1,14 +1,14 @@
 //! If serde is enabled we need to have the ability to serialize and deserialize all objects in the library.
 
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use serde::de::{self, MapAccess, SeqAccess, Visitor};
 use serde::ser::SerializeStruct;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::marker::PhantomData;
 
 use shapes::{Cuboid, Sphere};
-use PackedVolume;
 use Container;
+use PackedVolume;
 
 impl Serialize for Sphere {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -98,9 +98,11 @@ impl<'de> Deserialize<'de> for Sphere {
             where
                 V: SeqAccess<'de>,
             {
-                let center = seq.next_element()?
+                let center = seq
+                    .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(0, &self))?;
-                let radius = seq.next_element()?
+                let radius = seq
+                    .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(1, &self))?;
                 Ok(Sphere::new(center, radius).map_err(de::Error::custom)?)
             }
@@ -189,7 +191,8 @@ impl<'de> Deserialize<'de> for Cuboid {
             where
                 V: SeqAccess<'de>,
             {
-                let half_extents = seq.next_element()?
+                let half_extents = seq
+                    .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(0, &self))?;
                 Ok(Cuboid::from_vec(half_extents).map_err(de::Error::custom)?)
             }
@@ -276,9 +279,11 @@ impl<'de, C: Container + Deserialize<'de>> Deserialize<'de> for PackedVolume<C> 
             where
                 V: SeqAccess<'de>,
             {
-                let spheres = seq.next_element()?
+                let spheres = seq
+                    .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(0, &self))?;
-                let container = seq.next_element()?
+                let container = seq
+                    .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(1, &self))?;
                 Ok(PackedVolume::from_vec(spheres, container))
             }

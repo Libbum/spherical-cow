@@ -1,6 +1,6 @@
+use errors::SphericalCowError as Error;
 use shapes::Sphere;
 use Container;
-use errors::SphericalCowError as Error;
 
 #[derive(PartialEq, Debug, Clone)]
 /// Constructs a cuboid centered at the origin in Euclidean space.
@@ -28,9 +28,7 @@ impl Cuboid {
         if half_extents.iter().any(|he| *he <= 0.0) {
             Err(Error::NegativeExtents)
         } else {
-            Ok(Cuboid {
-                half_extents: half_extents,
-            })
+            Ok(Cuboid { half_extents })
         }
     }
 }

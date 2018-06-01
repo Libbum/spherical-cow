@@ -89,9 +89,9 @@ fn error_display_negative_extent() {
 
 #[test]
 fn error_display_containment() {
+    use init_spheres;
     use nalgebra::Point3;
     use shapes::Sphere;
-    use init_spheres;
 
     let container = Sphere::new(Point3::origin(), 0.1).unwrap();
 

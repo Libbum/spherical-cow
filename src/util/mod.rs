@@ -1,7 +1,7 @@
 //! Useful helper functions such as a fast ray casting method and volume finder for use with arbitrary shaped triangular meshes.
 
-use nalgebra::{self, Point3, Vector3};
 use nalgebra::core::Matrix;
+use nalgebra::{self, Point3, Vector3};
 
 /// Find the baycentric coordinates `(u,v)` and distance `t` given three triangle veriticies `vert0`, `vert1`, `vert2` and the
 /// unit vector `dir` (`D`) in the direction of a ray `R(t) = O + tD` such that `R(t)` is equivalent to a point `T(u,v)` on
@@ -54,7 +54,8 @@ pub fn trimesh_volume(triangles: &[(Point3<f32>, Point3<f32>, Point3<f32>)]) -> 
         .map(|triangle| {
             let &(a, b, c) = triangle;
             sixth
-                * (-c.x * b.y * a.z + b.x * c.y * a.z + c.x * a.y * b.z - a.x * c.y * b.z
+                * (-c.x * b.y * a.z + b.x * c.y * a.z + c.x * a.y * b.z
+                    - a.x * c.y * b.z
                     - b.x * a.y * c.z + a.x * b.y * c.z)
         })
         .sum()
