@@ -14,7 +14,6 @@ coverage:
 ignore:
   - "examples"  # No need to cover the examples
   - "tests" # Tests are always covered, so makes no sense to include them
-  - "src/serialization.rs" # tarpaulin cannot compile serde_derive currently, meaning we can't test serialization.
 
 comment:
   layout: "header, reach, diff, flags, files, footer"

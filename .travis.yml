@@ -13,7 +13,7 @@ rust:
 script:
 - cargo clean
 - cargo build
-- cargo test
+- cargo test --all-features
 
 after_success: |
   bash <(curl https://raw.githubusercontent.com/xd009642/tarpaulin/master/travis-install.sh)

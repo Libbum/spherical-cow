@@ -72,16 +72,11 @@ fn error_display_negative_radius() {
 fn error_display_negative_extent() {
     use shapes::Cuboid;
 
-    if let Err(err) = Cuboid::new(1., 1., -1.) {
-        assert_eq!(
-            format!("{} {}", err, err.description()),
-            format!("A supplied half extent is negative. negative half extent")
-        );
-    } else {
-        panic!(
-            "Sending a negative half extent to the cuboid creation function yielded an Ok result"
-        );
-    }
+    let err = Cuboid::new(1., 1., -1.).unwrap_err();
+    assert_eq!(
+        format!("{} {}", err, err.description()),
+        format!("A supplied half extent is negative. negative half extent")
+    );
 }
 
 #[test]
@@ -92,14 +87,11 @@ fn error_display_containment() {
 
     let container = Sphere::new(Point3::origin(), 0.1).unwrap();
 
-    if let Err(err) = init_spheres(&[10., 15., 20.], &container) {
-        assert_eq!(
-            format!("{} {}", err, err.description()),
-            format!("Sphere is not contained within bounding geometry. outside bounding geometry")
-        );
-    } else {
-        panic!("Testing a sphere which is not contained in a containter yielded an Ok result");
-    }
+    let err = init_spheres(&[10., 15., 20.], &container).unwrap_err();
+    assert_eq!(
+        format!("{} {}", err, err.description()),
+        format!("Sphere is not contained within bounding geometry. outside bounding geometry")
+    );
 }
 
 #[test]
@@ -110,21 +102,21 @@ fn error_display_empty_values() {
     let empty_vec: Vec<Sphere> = Vec::new();
     let mut rng = thread_rng();
 
-    if let Err(err) = rng.choose(&empty_vec).ok_or(SphericalCowError::NoneSetF) {
-        assert_eq!(
-            format!("{} {}", err, err.description()),
-            format!("Returned none when choosing value from set f. none from set f")
-        );
-    } else {
-        panic!("set f was empty when it should not have been");
-    }
+    let mut err = rng
+        .choose(&empty_vec)
+        .ok_or(SphericalCowError::NoneSetF)
+        .unwrap_err();
+    assert_eq!(
+        format!("{} {}", err, err.description()),
+        format!("Returned none when choosing value from set f. none from set f")
+    );
 
-    if let Err(err) = rng.choose(&empty_vec).ok_or(SphericalCowError::NoneFront) {
-        assert_eq!(
-            format!("{} {}", err, err.description()),
-            format!("Returned none when choosing value from front. none from front")
-        );
-    } else {
-        panic!("front was empty when it should not have been");
-    }
+    err = rng
+        .choose(&empty_vec)
+        .ok_or(SphericalCowError::NoneFront)
+        .unwrap_err();
+    assert_eq!(
+        format!("{} {}", err, err.description()),
+        format!("Returned none when choosing value from front. none from front")
+    );
 }
