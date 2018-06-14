@@ -5,13 +5,13 @@ extern crate rand;
 extern crate spherical_cow;
 
 use kiss3d::camera::ArcBall;
-use kiss3d::window::Window;
 use kiss3d::light::Light;
-use spherical_cow::util::{ray_intersection_count, trimesh_volume};
-use spherical_cow::{Container, PackedVolume};
-use rand::distributions::Uniform;
+use kiss3d::window::Window;
 use nalgebra::{Point3, Translation3};
 use obj::{Obj, SimplePolygon};
+use rand::distributions::Uniform;
+use spherical_cow::util::{ray_intersection_count, trimesh_volume};
+use spherical_cow::{Container, PackedVolume};
 use std::path::Path;
 use std::time::Instant;
 
@@ -53,7 +53,8 @@ fn main() {
     // Load an object file from disk
     println!("Loading cow object from disk...");
     let data = Obj::<SimplePolygon>::load(&Path::new("examples/objects/cow.obj")).unwrap();
-    let points: Vec<Point3<f32>> = data.position
+    let points: Vec<Point3<f32>> = data
+        .position
         .iter()
         .map(|pos| Point3::new(pos[0], pos[1], pos[2]))
         .collect();

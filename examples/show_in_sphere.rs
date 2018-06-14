@@ -4,11 +4,11 @@ extern crate rand;
 extern crate spherical_cow;
 
 use kiss3d::camera::ArcBall;
-use kiss3d::window::Window;
 use kiss3d::light::Light;
-use spherical_cow::shapes::Sphere;
-use rand::distributions::Uniform;
+use kiss3d::window::Window;
 use nalgebra::{Point3, Translation3, UnitQuaternion, Vector3};
+use rand::distributions::Uniform;
+use spherical_cow::shapes::Sphere;
 
 fn main() {
     // Pack spheres with radii between 0.1 and 0.2 into a spherical container of radius 2.

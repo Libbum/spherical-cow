@@ -1,14 +1,14 @@
-extern crate spherical_cow;
-extern crate nalgebra;
 extern crate float_cmp;
+extern crate nalgebra;
 extern crate rand;
+extern crate spherical_cow;
 
-use nalgebra::Point3;
+use float_cmp::ApproxEqUlps;
 use nalgebra::core::Matrix3;
+use nalgebra::Point3;
+use rand::distributions::Uniform;
 use spherical_cow::shapes::Sphere;
 use spherical_cow::*;
-use float_cmp::ApproxEqUlps;
-use rand::distributions::Uniform;
 
 #[test]
 fn packed_volume_create_ok() {
@@ -45,11 +45,11 @@ fn packing_statistics() {
         Sphere::new(Point3::new(-0.045371085, 0.50203013, 0.0), 0.43867713).unwrap(),
         Sphere::new(
             Point3::new(-0.03869664, -0.009303231, -0.63180053),
-            0.374144
+            0.374144,
         ).unwrap(),
         Sphere::new(
             Point3::new(-0.031967796, -0.6622924, -0.43089586),
-            0.3090857
+            0.3090857,
         ).unwrap(),
     ];
 
@@ -60,8 +60,8 @@ fn packing_statistics() {
     assert!(packed.void_ratio().approx_eq_ulps(&3.0377078, 2));
     assert!(packed.coordination_number().approx_eq_ulps(&3.60, 2));
     assert!(
-        packed.fabric_tensor() ==
-            Matrix3::new(
+        packed.fabric_tensor()
+            == Matrix3::new(
                 0.30427963,
                 0.00050500076,
                 -0.0121679725,

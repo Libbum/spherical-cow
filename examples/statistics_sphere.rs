@@ -2,10 +2,10 @@ extern crate nalgebra;
 extern crate rand;
 extern crate spherical_cow;
 
+use nalgebra::Point3;
+use rand::distributions::Uniform;
 use spherical_cow::shapes::Sphere;
 use spherical_cow::PackedVolume;
-use rand::distributions::Uniform;
-use nalgebra::Point3;
 
 fn main() {
     // Pack spheres with radii between 0.05 and 0.1 into a spherical container of radius 2,

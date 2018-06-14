@@ -1,13 +1,13 @@
 extern crate nalgebra;
-extern crate rand;
 extern crate obj;
+extern crate rand;
 extern crate spherical_cow;
 
-use spherical_cow::util::{trimesh_volume, ray_intersection_count};
-use spherical_cow::{PackedVolume, Container};
-use rand::distributions::Uniform;
 use nalgebra::Point3;
 use obj::{Obj, SimplePolygon};
+use rand::distributions::Uniform;
+use spherical_cow::util::{ray_intersection_count, trimesh_volume};
+use spherical_cow::{Container, PackedVolume};
 use std::path::Path;
 
 #[derive(Clone)]
@@ -44,11 +44,11 @@ impl Container for Emerald {
     }
 }
 
-
 fn main() {
     // Load an object file from disk
     let data = Obj::<SimplePolygon>::load(&Path::new("examples/objects/emerald.obj")).unwrap();
-    let points: Vec<Point3<f32>> = data.position
+    let points: Vec<Point3<f32>> = data
+        .position
         .iter()
         .map(|pos| Point3::new(pos[0], pos[1], pos[2]))
         .collect();
@@ -69,7 +69,9 @@ fn main() {
     }
 
     // This is our bounding mesh in the shape of an emerald.
-    let boundary = Emerald { triangles: triangles };
+    let boundary = Emerald {
+        triangles: triangles,
+    };
 
     // Pack spheres with radii between 0.3 and 0.5.
     let mut sizes = Uniform::new(0.3, 0.5);

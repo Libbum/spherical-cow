@@ -1,11 +1,11 @@
 extern crate nalgebra;
 extern crate rand;
-extern crate spherical_cow;
 extern crate serde_json;
+extern crate spherical_cow;
 
+use rand::distributions::Uniform;
 use spherical_cow::shapes::Cuboid;
 use spherical_cow::PackedVolume;
-use rand::distributions::Uniform;
 // NOTE: You must run this example with the "serde-1" feature enabled
 // cargo run --release --features serde-1 --example serialize
 fn main() {

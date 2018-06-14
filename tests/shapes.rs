@@ -1,8 +1,8 @@
-extern crate spherical_cow;
 extern crate nalgebra;
+extern crate spherical_cow;
 
-use spherical_cow::shapes::*;
 use nalgebra::Point3;
+use spherical_cow::shapes::*;
 
 #[test]
 fn sphere_negative_radius_error() {

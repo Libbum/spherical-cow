@@ -1,21 +1,21 @@
 extern crate kiss3d;
 extern crate nalgebra;
-extern crate rand;
 extern crate obj;
+extern crate rand;
 extern crate spherical_cow;
 
 use kiss3d::camera::ArcBall;
-use kiss3d::window::Window;
 use kiss3d::light::Light;
 use kiss3d::resource::Mesh;
-use spherical_cow::util::{trimesh_volume, ray_intersection_count};
-use spherical_cow::{PackedVolume, Container};
-use rand::distributions::Uniform;
+use kiss3d::window::Window;
 use nalgebra::{Point3, Translation3, UnitQuaternion, Vector3};
 use obj::{Obj, SimplePolygon};
+use rand::distributions::Uniform;
+use spherical_cow::util::{ray_intersection_count, trimesh_volume};
+use spherical_cow::{Container, PackedVolume};
+use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
-use std::cell::RefCell;
 
 #[derive(Clone)]
 /// A simple struct that holds triangluar information obtained from an obj file.
@@ -51,11 +51,11 @@ impl Container for Emerald {
     }
 }
 
-
 fn main() {
     // Load an object file from disk
     let data = Obj::<SimplePolygon>::load(&Path::new("examples/objects/emerald.obj")).unwrap();
-    let points: Vec<Point3<f32>> = data.position
+    let points: Vec<Point3<f32>> = data
+        .position
         .iter()
         .map(|pos| Point3::new(pos[0], pos[1], pos[2]))
         .collect();
@@ -76,12 +76,18 @@ fn main() {
     }
 
     // Build a mesh to display later. We don't actually use this mesh for the calculation.
-    let mesh = Rc::new(RefCell::new(
-        Mesh::new(points.clone(), indices, None, None, false),
-    ));
+    let mesh = Rc::new(RefCell::new(Mesh::new(
+        points.clone(),
+        indices,
+        None,
+        None,
+        false,
+    )));
 
     // This is our bounding mesh in the shape of an emerald.
-    let boundary = Emerald { triangles: triangles };
+    let boundary = Emerald {
+        triangles: triangles,
+    };
 
     // Pack spheres with radii between 0.3 and 0.5.
     let mut sizes = Uniform::new(0.3, 0.5);
@@ -97,7 +103,6 @@ fn main() {
     let mut window =
         Window::new_with_size("Spherical Cow: Spheres in an emerald trimesh", 1920, 1080);
     window.set_light(Light::StickToCamera);
-
 
     // Populate spheres into scene.
     for sphere in packed.spheres.iter() {

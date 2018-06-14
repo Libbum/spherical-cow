@@ -61,14 +61,11 @@ fn error_display_negative_radius() {
     use nalgebra::Point3;
     use shapes::Sphere;
 
-    if let Err(err) = Sphere::new(Point3::origin(), -1.) {
-        assert_eq!(
-            format!("{} {}", err, err.description()),
-            format!("Supplied radius is negative. negative radius")
-        );
-    } else {
-        panic!("Sending a negative radius to the sphere creation function yielded an Ok result");
-    }
+    let err = Sphere::new(Point3::origin(), -1.).unwrap_err();
+    assert_eq!(
+        format!("{} {}", err, err.description()),
+        format!("Supplied radius is negative. negative radius")
+    );
 }
 
 #[test]

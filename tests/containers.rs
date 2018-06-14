@@ -1,16 +1,16 @@
+extern crate float_cmp;
 extern crate nalgebra;
 extern crate obj;
-extern crate float_cmp;
 extern crate spherical_cow;
 
-use spherical_cow::shapes::*;
-use spherical_cow::Container;
-use nalgebra::Point3;
-use std::path::Path;
-use spherical_cow::util::{trimesh_volume, ray_intersection_count};
-use obj::{Obj, SimplePolygon};
 use float_cmp::ApproxEqUlps;
+use nalgebra::Point3;
+use obj::{Obj, SimplePolygon};
+use spherical_cow::shapes::*;
+use spherical_cow::util::{ray_intersection_count, trimesh_volume};
+use spherical_cow::Container;
 use std::f32::consts::PI;
+use std::path::Path;
 
 #[test]
 fn in_sphere() {
@@ -32,7 +32,11 @@ fn outside_sphere() {
 fn sphere_volume() {
     let sphere = Sphere::new(Point3::new(10., 2.5, 3.8), 2.6).unwrap();
 
-    assert!(sphere.volume().approx_eq_ulps(&(4./3. * PI * 2.6_f32.powi(3)),2));
+    assert!(
+        sphere
+            .volume()
+            .approx_eq_ulps(&(4. / 3. * PI * 2.6_f32.powi(3)), 2)
+    );
 }
 
 #[test]
@@ -55,7 +59,11 @@ fn outside_cuboid() {
 fn cuboid_volume() {
     let cuboid = Cuboid::new(15.2, 8.0, 12.3).unwrap();
 
-    assert!(cuboid.volume().approx_eq_ulps(&((2.*15.2)*(2.*8.)*(2.*12.3)),2));
+    assert!(
+        cuboid
+            .volume()
+            .approx_eq_ulps(&((2. * 15.2) * (2. * 8.) * (2. * 12.3)), 2)
+    );
 }
 
 struct Emerald {
@@ -65,7 +73,8 @@ struct Emerald {
 impl Emerald {
     fn build() -> Emerald {
         let data = Obj::<SimplePolygon>::load(&Path::new("examples/objects/emerald.obj")).unwrap();
-        let points: Vec<Point3<f32>> = data.position
+        let points: Vec<Point3<f32>> = data
+            .position
             .iter()
             .map(|pos| Point3::new(pos[0], pos[1], pos[2]))
             .collect();
@@ -78,7 +87,9 @@ impl Emerald {
                 }
             }
         }
-        Emerald { triangles: triangles }
+        Emerald {
+            triangles: triangles,
+        }
     }
 }
 
@@ -95,7 +106,6 @@ impl Container for Emerald {
         trimesh_volume(&self.triangles)
     }
 }
-
 
 #[test]
 fn in_emerald() {
@@ -120,5 +130,5 @@ fn emerald_volume() {
     // This test ultimately checks `utils::trimesh_volume`
     let emerald = Emerald::build();
 
-    assert!(emerald.volume().approx_eq_ulps(&2354.709,2));
+    assert!(emerald.volume().approx_eq_ulps(&2354.709, 2));
 }

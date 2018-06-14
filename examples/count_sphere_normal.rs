@@ -2,9 +2,9 @@ extern crate nalgebra;
 extern crate rand;
 extern crate spherical_cow;
 
-use spherical_cow::shapes::Sphere;
-use rand::distributions::Normal;
 use nalgebra::Point3;
+use rand::distributions::Normal;
+use spherical_cow::shapes::Sphere;
 
 /// Pack spheres with radii normally distributed (with a mean of 3) into a spherical container of radius 20.
 fn main() {
