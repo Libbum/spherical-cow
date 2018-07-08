@@ -17,5 +17,5 @@ script:
 
 after_success: |
   `RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install cargo-tarpaulin`
-  cargo tarpaulin --out Xml
+  cargo tarpaulin --out Xml --all-features
   bash <(curl -s https://codecov.io/bash)
