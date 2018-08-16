@@ -59,6 +59,7 @@ More elaborate examples can be found in the [examples](examples/) directory.
 True to its name, it is indeed possible to build a spherical cow:
 
 ![spherical cow in vacuum](https://github.com/Libbum/spherical-cow/blob/master/examples/objects/cow_output.jpg?raw=true)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FLibbum%2Fspherical-cow.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FLibbum%2Fspherical-cow?ref=badge_shield)
 
 You can run this example yourself from [show_in_cow](examples/show_in_cow.rs).
 
@@ -100,3 +101,6 @@ The reason this library was initially written was to optimise the layout of infl
 
 Licensed under the Apache License, [Version 2.0](http://www.apache.org/licenses/LICENSE-2.0) or the [MIT license](http://opensource.org/licenses/MIT), at your option.
 These files may not be copied, modified, or distributed except according to those terms.
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FLibbum%2Fspherical-cow.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FLibbum%2Fspherical-cow?ref=badge_large)
