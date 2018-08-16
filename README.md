@@ -18,6 +18,10 @@
     <a href="https://codecov.io/gh/Libbum/spherical-cow">
         <img src="https://codecov.io/gh/Libbum/spherical-cow/branch/master/graph/badge.svg" alt="Codecov" />
     </a>
+    │
+    <a href="https://app.fossa.io/projects/git%2Bgithub.com%2FLibbum%2Fspherical-cow?ref=badge_shield">
+        <img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2FLibbum%2Fspherical-cow.svg?type=shield" alt="FOSSA Status" />
+    </a>
 </div>
 <br />
 
@@ -59,7 +63,6 @@ More elaborate examples can be found in the [examples](examples/) directory.
 True to its name, it is indeed possible to build a spherical cow:
 
 ![spherical cow in vacuum](https://github.com/Libbum/spherical-cow/blob/master/examples/objects/cow_output.jpg?raw=true)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FLibbum%2Fspherical-cow.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FLibbum%2Fspherical-cow?ref=badge_shield)
 
 You can run this example yourself from [show_in_cow](examples/show_in_cow.rs).
 
