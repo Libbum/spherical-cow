@@ -1,3 +1,5 @@
+#![cfg(feature = "serde-1")]
+
 extern crate nalgebra;
 extern crate serde_json;
 extern crate spherical_cow;
