@@ -108,3 +108,10 @@ These files may not be copied, modified, or distributed except according to thos
 
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FLibbum%2Fspherical-cow.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FLibbum%2Fspherical-cow?ref=badge_large)
+
+
+## Deeply linked dependencies
+
+The [wayland-protocols](https://github.com/Smithay/wayland-rs/tree/master/wayland-protocols) library (released under an MIT license) is used by [kiss3d](https://github.com/sebcrozet/kiss3d) and [obj](https://github.com/Smithay/wayland-rs/tree/master/wayland-protocols), both of which are only extant in the examples directory of this project (and thus are NOT a part of the library).
+Content therein: the file `misc/server-decoration.xml`, is Copyright (C) 2015 Martin Gräßlin and licensed under the GNU Lesser General Public Library, version 2.1. You can find a copy of this license at [https://www.gnu.org/licenses/lgpl-2.1.en.html](https://www.gnu.org/licenses/lgpl-2.1.en.html)
+
