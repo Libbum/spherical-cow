@@ -60,15 +60,15 @@ fn main() {
         .map(|pos| Point3::new(pos[0], pos[1], pos[2]))
         .collect();
 
-    let mut indices: Vec<Point3<u32>> = Vec::new();
+    let mut indices: Vec<Point3<u16>> = Vec::new();
     let mut triangles: Vec<(Point3<f32>, Point3<f32>, Point3<f32>)> = Vec::new();
     for object in data.objects.iter() {
         for group in object.groups.iter() {
             for poly in group.polys.iter() {
                 indices.push(Point3::new(
-                    poly[0].0 as u32,
-                    poly[1].0 as u32,
-                    poly[2].0 as u32,
+                    poly[0].0 as u16,
+                    poly[1].0 as u16,
+                    poly[2].0 as u16,
                 ));
                 triangles.push((points[poly[0].0], points[poly[1].0], points[poly[2].0]));
             }
