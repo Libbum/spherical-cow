@@ -428,13 +428,13 @@ fn identify_f<C: Container>(
         let gamma_neg = 0.5 * (-dot_wt - (dot_wt_2 - value_4d).sqrt());
 
         let s_4_positive = Sphere::new(
-            Point3::from_coordinates(
+            Point3::from(
                 alpha * unitvector_u + beta * unitvector_v + gamma_pos * unitvector_t,
             ),
             radius,
         )?;
         let s_4_negative = Sphere::new(
-            Point3::from_coordinates(
+            Point3::from(
                 alpha * unitvector_u + beta * unitvector_v + gamma_neg * unitvector_t,
             ),
             radius,
