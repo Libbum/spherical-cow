@@ -79,7 +79,7 @@ The reason this library was initially written was to optimise the layout of infl
 
 - 0.1.2
 
-  - Patch release to fix hard failures due to rust-lang/rust#49799 (thanks [hdhoang](https://github.com/hdhoang))
+  - Patch release to fix hard failures due to [rust-lang/rust#49799](https://github.com/rust-lang/rust/pull/49799) (thanks [hdhoang](https://github.com/hdhoang))
   - Small performance improvements via algebraic simplifications and minimising vector allocations.
   - Add [itertools](https://github.com/bluss/rust-itertools) to simplify pair collection using `.collect_tuple()`.
   - Added [sphere_pack](benches/sphere_pack.rs) benchmarking target using [criterion](https://github.com/japaric/criterion.rs).
