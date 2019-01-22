@@ -13,17 +13,17 @@ default = []
 serde-1 = ["serde", "nalgebra/serde-serialize"]
 
 [dependencies]
-rand = "0.5.5"
-nalgebra = "0.16.6"
+rand = "0.6.4"
+nalgebra = "0.16.13"
 float-cmp = "0.4"
-itertools = "0.7"
+itertools = "0.8"
 serde = { version = "1.0", optional = true }
 
 [dev-dependencies]
-kiss3d = "0.16.4"
+kiss3d = "0.17.1"
 obj = "0.9"
 serde_json = "1.0"
-criterion = "0.2"
+criterion = "0.2.8"
 
 [[bench]]
 name = "sphere_pack"

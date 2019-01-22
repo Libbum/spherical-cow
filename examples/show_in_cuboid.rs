@@ -29,7 +29,7 @@ fn main() {
     for sphere in spheres.iter() {
         let mut scene_sphere = window.add_sphere(sphere.radius);
         scene_sphere.set_color(rand::random(), rand::random(), rand::random());
-        scene_sphere.set_local_translation(Translation3::from_vector(sphere.center.coords));
+        scene_sphere.set_local_translation(Translation3::from(sphere.center.coords));
     }
 
     // Show result.

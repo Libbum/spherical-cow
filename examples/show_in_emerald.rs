@@ -8,7 +8,7 @@ use kiss3d::camera::ArcBall;
 use kiss3d::light::Light;
 use kiss3d::resource::Mesh;
 use kiss3d::window::Window;
-use nalgebra::{Point3, Translation3, UnitQuaternion, Vector3};
+use nalgebra::{Matrix, Point3, Translation3, UnitQuaternion, Vector3};
 use obj::{Obj, SimplePolygon};
 use rand::distributions::Uniform;
 use spherical_cow::util::{ray_intersection_count, trimesh_volume};
@@ -35,7 +35,7 @@ impl Container for Emerald {
         // Distance from origin to the sphere's center point plus its radius
         let o_dist = nalgebra::distance(&Point3::origin(), &sphere.center) + sphere.radius;
         // Unit vector in the direction of the sphere
-        let norm_dir = sphere.center.coords / nalgebra::norm(&sphere.center.coords);
+        let norm_dir = sphere.center.coords / Matrix::norm(&sphere.center.coords);
         let count = ray_intersection_count(&self.triangles, norm_dir, o_dist);
         if is_odd(count) {
             // Sphere is outside, thus not contained
@@ -108,7 +108,7 @@ fn main() {
     for sphere in packed.spheres.iter() {
         let mut scene_sphere = window.add_sphere(sphere.radius);
         scene_sphere.set_color(rand::random(), rand::random(), rand::random());
-        scene_sphere.set_local_translation(Translation3::from_vector(sphere.center.coords));
+        scene_sphere.set_local_translation(Translation3::from(sphere.center.coords));
     }
     // Add the mesh wireframe.
     let mut scene_emerald = window.add_mesh(mesh, Vector3::new(1., 1., 1.));

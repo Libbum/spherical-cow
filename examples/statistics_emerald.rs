@@ -3,7 +3,7 @@ extern crate obj;
 extern crate rand;
 extern crate spherical_cow;
 
-use nalgebra::Point3;
+use nalgebra::{Matrix, Point3};
 use obj::{Obj, SimplePolygon};
 use rand::distributions::Uniform;
 use spherical_cow::util::{ray_intersection_count, trimesh_volume};
@@ -28,7 +28,7 @@ impl Container for Emerald {
         // Distance from origin to the sphere's center point plus its radius
         let o_dist = nalgebra::distance(&Point3::origin(), &sphere.center) + sphere.radius;
         // Unit vector in the direction of the sphere
-        let norm_dir = sphere.center.coords / nalgebra::norm(&sphere.center.coords);
+        let norm_dir = sphere.center.coords / Matrix::norm(&sphere.center.coords);
         let count = ray_intersection_count(&self.triangles, norm_dir, o_dist);
         if is_odd(count) {
             // Sphere is outside, thus not contained

@@ -33,7 +33,7 @@
 //! use spherical_cow::shapes::Sphere;
 //! use spherical_cow::PackedVolume;
 //! use rand::distributions::Uniform;
-//! use nalgebra::Point3;
+//! use nalgebra::{Matrix, Point3};
 //!
 //! fn main() {
 //!     // Pack spheres with radii between 0.05 and 0.1 into a spherical container of radius 2,
@@ -76,7 +76,7 @@ use itertools::Itertools;
 use nalgebra::core::{Matrix, Matrix3};
 use nalgebra::Point3;
 use rand::distributions::Distribution;
-use rand::Rng;
+use rand::prelude::SliceRandom;
 use shapes::Sphere;
 
 /// The `Container` trait must be implemented for all shapes you wish to pack spheres into.
@@ -173,7 +173,7 @@ impl<C: Container> PackedVolume<C> {
                     let vec_n_pc = Matrix::cross(&center, &c.center.coords);
                     // The unit vector pointing from the center of the current sphere to
                     // the center of a connecting sphere
-                    let n_pc = vec_n_pc / nalgebra::norm(&vec_n_pc);
+                    let n_pc = vec_n_pc / Matrix::norm(&vec_n_pc);
                     sum_vec += n_pc[i] * n_pc[j];
                 }
                 sum_all += sum_vec / m_p;
@@ -248,7 +248,7 @@ pub fn pack_spheres<C: Container, D: Distribution<f64>>(
     let mut set_f = Vec::new();
     'outer: while !front.is_empty() {
         // s₀ := s(c₀, r₀) picked at random from F
-        let curr_sphere = rng.choose(&front).ok_or(Error::NoneFront)?.clone();
+        let curr_sphere = front.choose(&mut rng).ok_or(Error::NoneFront)?.clone();
         // V := {s(c', r') ∈ S : d(c₀, c') ≤ r₀ + r' + 2r}
         set_v.clear();
         set_v = spheres
@@ -275,7 +275,7 @@ pub fn pack_spheres<C: Container, D: Distribution<f64>>(
             if !set_f.is_empty() {
                 // Found at least one position to place the sphere,
                 // choose one and move on
-                let s_new = rng.choose(&set_f).ok_or(Error::NoneSetF)?;
+                let s_new = set_f.choose(&mut rng).ok_or(Error::NoneSetF)?;
                 front.push(s_new.clone());
                 spheres.push(s_new.clone());
                 new_radius = size_distribution.sample(&mut rng) as f32;
@@ -386,11 +386,11 @@ fn identify_f<C: Container>(
     let distance_34 = s_3.radius + radius;
 
     let vector_u = s_1.center - s_2.center;
-    let unitvector_u = vector_u / nalgebra::norm(&vector_u);
+    let unitvector_u = vector_u / Matrix::norm(&vector_u);
     let vector_v = s_1.center - s_3.center;
-    let unitvector_v = vector_v / nalgebra::norm(&vector_v);
+    let unitvector_v = vector_v / Matrix::norm(&vector_v);
     let cross_uv = Matrix::cross(&vector_u, &vector_v);
-    let unitvector_t = cross_uv / nalgebra::norm(&cross_uv);
+    let unitvector_t = cross_uv / Matrix::norm(&cross_uv);
     let vector_w = -2. * s_1.center.coords;
 
     let distance_c =
@@ -399,17 +399,17 @@ fn identify_f<C: Container>(
         - distance_c
         - s_2.center.x.powi(2)
         - s_2.center.y.powi(2)
-        - s_2.center.z.powi(2)) / (2. * nalgebra::norm(&vector_u));
+        - s_2.center.z.powi(2)) / (2. * Matrix::norm(&vector_u));
     let distance_b = (distance_34.powi(2)
         - distance_c
         - s_3.center.x.powi(2)
         - s_3.center.y.powi(2)
-        - s_3.center.z.powi(2)) / (2. * nalgebra::norm(&vector_v));
+        - s_3.center.z.powi(2)) / (2. * Matrix::norm(&vector_v));
 
-    let dot_uv = nalgebra::dot(&unitvector_u, &unitvector_v);
-    let dot_wt = nalgebra::dot(&vector_w, &unitvector_t);
-    let dot_uw = nalgebra::dot(&unitvector_u, &vector_w);
-    let dot_vw = nalgebra::dot(&unitvector_v, &vector_w);
+    let dot_uv = Matrix::dot(&unitvector_u, &unitvector_v);
+    let dot_wt = Matrix::dot(&vector_w, &unitvector_t);
+    let dot_uw = Matrix::dot(&unitvector_u, &vector_w);
+    let dot_vw = Matrix::dot(&unitvector_v, &vector_w);
 
     let denominator = 1. - dot_uv.powi(2);
     let alpha = (distance_a - distance_b * dot_uv) / denominator;

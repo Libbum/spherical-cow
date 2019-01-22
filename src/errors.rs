@@ -96,14 +96,15 @@ fn error_display_containment() {
 
 #[test]
 fn error_display_empty_values() {
-    use rand::{thread_rng, Rng};
+    use rand::thread_rng;
+    use rand::prelude::SliceRandom;
     use shapes::Sphere;
 
     let empty_vec: Vec<Sphere> = Vec::new();
     let mut rng = thread_rng();
 
-    let mut err = rng
-        .choose(&empty_vec)
+    let mut err = empty_vec
+        .choose(&mut rng)
         .ok_or(SphericalCowError::NoneSetF)
         .unwrap_err();
     assert_eq!(
@@ -111,8 +112,8 @@ fn error_display_empty_values() {
         format!("Returned none when choosing value from set f. none from set f")
     );
 
-    err = rng
-        .choose(&empty_vec)
+    err = empty_vec
+        .choose(&mut rng)
         .ok_or(SphericalCowError::NoneFront)
         .unwrap_err();
     assert_eq!(

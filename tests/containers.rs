@@ -4,7 +4,7 @@ extern crate obj;
 extern crate spherical_cow;
 
 use float_cmp::ApproxEqUlps;
-use nalgebra::Point3;
+use nalgebra::{Matrix, Point3};
 use obj::{Obj, SimplePolygon};
 use spherical_cow::shapes::*;
 use spherical_cow::util::{ray_intersection_count, trimesh_volume};
@@ -97,7 +97,7 @@ impl Container for Emerald {
     fn contains(&self, sphere: &spherical_cow::shapes::Sphere) -> bool {
         let is_even = |x: i32| x & 1 == 0;
         let o_dist = nalgebra::distance(&Point3::origin(), &sphere.center) + sphere.radius;
-        let norm_dir = sphere.center.coords / nalgebra::norm(&sphere.center.coords);
+        let norm_dir = sphere.center.coords / Matrix::norm(&sphere.center.coords);
         let count = ray_intersection_count(&self.triangles, norm_dir, o_dist);
         is_even(count)
     }

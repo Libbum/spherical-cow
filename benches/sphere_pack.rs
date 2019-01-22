@@ -10,7 +10,7 @@ use rand::distributions::Uniform;
 use spherical_cow::shapes::Sphere;
 
 fn criterion_benchmark(c: &mut Criterion) {
-    c.sample_size(10).bench_function_over_inputs(
+    c.bench_function_over_inputs(
         "sphere [2, 2.5, 3, 3.5, 4], 0.1-0.2",
         |b, &&radius| {
             b.iter(|| {
