@@ -1,6 +1,6 @@
 [package]
 name = "spherical-cow"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Tim DuBois <tim@neophilus.net>"]
 description = "Spherical Cow: High volume fraction sphere packing in arbitrary geometries"
 repository = "https://github.com/Libbum/spherical-cow"

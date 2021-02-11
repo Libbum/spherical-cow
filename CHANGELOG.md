@@ -1,7 +1,9 @@
 # Changelog
 
-- 0.1.3 (Unreleased)
+- 0.1.3
     - Removed nightly dependency (thanks [aleph_0](https://github.com/aleph-oh)).
+    - Update to 2018 Edition.
+    - Dependencies updated, many were 2 years old.
 
 - 0.1.2
 
