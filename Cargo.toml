@@ -29,6 +29,7 @@ serde_json = "1.0"
 criterion = "0.3"
 
 [[bench]]
+path = "benches/sphere_pack.rs"
 name = "sphere_pack"
 harness = false
 
@@ -40,30 +41,39 @@ codecov = { repository = "Libbum/spherical-cow", branch = "master", service = "g
 features = ["serde-1"]
 
 [[example]]
+path = "examples/serialize.rs"
 name = "serialize"
 required-features = ["serde-1"]
 
 [[example]]
+path = "examples/count_sphere_normal.rs"
 name = "count_sphere_normal"
 
 [[example]]
+path = "examples/count_sphere_range.rs"
 name = "count_sphere_range"
 
 [[example]]
+path = "examples/show_in_cow.rs"
 name = "show_in_cow"
 
 [[example]]
+path = "examples/show_in_cuboid.rs"
 name = "show_in_cuboid"
 
 [[example]]
+path = "examples/show_in_emerald.rs"
 name = "show_in_emerald"
 
 [[example]]
+path = "examples/show_in_sphere.rs"
 name = "show_in_sphere"
 
 [[example]]
+path = "examples/statistics_emerald.rs"
 name = "statistics_emerald"
 
 [[example]]
+path = "examples/statistics_sphere.rs"
 name = "statistics_sphere"
 
