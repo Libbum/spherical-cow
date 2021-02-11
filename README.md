@@ -38,10 +38,6 @@ Complete documentation can be found at [docs.rs](https://docs.rs/spherical-cow/)
 
 A simple example to get you packing spheres of radii (0.1..0.2) into a container sphere of radius 2.
 ```rust
-extern crate nalgebra;
-extern crate rand;
-extern crate spherical_cow;
-
 use spherical_cow::shapes::Sphere;
 use rand::distributions::Uniform;
 use nalgebra::Point3;
