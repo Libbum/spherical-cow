@@ -21,8 +21,6 @@
 //! extern crate spherical_cow;
 //! ```
 //!
-//! Currently this library requires the rust nightly compiler as at depends on the `remove_item` function of `Vec`.
-//!
 //! To calculate the `volume_fraction` of a spherical container with radius 2 filled with spheres of radii between 0.05 and 0.1 is straightforward:
 //!
 //! ```rust,no_run
@@ -55,7 +53,6 @@
 //! Valera *et al.*, [Computational Particle Mechanics 2, 161 (2015)](https://doi.org/10.1007/s40571-015-0045-8).
 
 #![warn(missing_docs)]
-#![feature(vec_remove_item)]
 
 extern crate float_cmp;
 extern crate itertools;
@@ -282,8 +279,9 @@ pub fn pack_spheres<C: Container, D: Distribution<f64>>(
                 continue 'outer;
             }
         }
-        // NOTE: his is a nightly function only
-        front.remove_item(&curr_sphere);
+        if let Some(i) = front.iter().position(|s| s == &curr_sphere) {
+            front.remove(i);
+        }
     }
     Ok(spheres)
 }
