@@ -6,8 +6,8 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::marker::PhantomData;
 
-use shapes::{Cuboid, Sphere};
-use Container;
+use crate::shapes::{Cuboid, Sphere};
+use crate::Container;
 use PackedVolume;
 
 impl Serialize for Sphere {

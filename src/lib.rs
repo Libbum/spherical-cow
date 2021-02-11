@@ -15,19 +15,9 @@
 //! spherical-cow = { version = "0.1", features = ["serde-1"] }
 //! ```
 //!
-//! Then, add this in your crate root:
-//!
-//! ```rust
-//! extern crate spherical_cow;
-//! ```
-//!
 //! To calculate the `volume_fraction` of a spherical container with radius 2 filled with spheres of radii between 0.05 and 0.1 is straightforward:
 //!
 //! ```rust,no_run
-//! extern crate nalgebra;
-//! extern crate rand;
-//! extern crate spherical_cow;
-//!
 //! use spherical_cow::shapes::Sphere;
 //! use spherical_cow::PackedVolume;
 //! use rand::distributions::Uniform;
@@ -54,27 +44,20 @@
 
 #![warn(missing_docs)]
 
-extern crate float_cmp;
-extern crate itertools;
-extern crate nalgebra;
-extern crate rand;
-#[cfg(feature = "serde-1")]
-extern crate serde;
-
 pub mod errors;
 #[cfg(feature = "serde-1")]
 mod serialization;
 pub mod shapes;
 pub mod util;
 
-use errors::SphericalCowError as Error;
+use crate::errors::SphericalCowError as Error;
+use crate::shapes::Sphere;
 use float_cmp::ApproxEqRatio;
 use itertools::Itertools;
 use nalgebra::core::{Matrix, Matrix3};
 use nalgebra::Point3;
 use rand::distributions::Distribution;
 use rand::prelude::SliceRandom;
-use shapes::Sphere;
 
 /// The `Container` trait must be implemented for all shapes you wish to pack spheres into.
 /// Standard shapes such as spheres and cuboids already derrive this trait. More complicated
@@ -397,12 +380,14 @@ fn identify_f<C: Container>(
         - distance_c
         - s_2.center.x.powi(2)
         - s_2.center.y.powi(2)
-        - s_2.center.z.powi(2)) / (2. * Matrix::norm(&vector_u));
+        - s_2.center.z.powi(2))
+        / (2. * Matrix::norm(&vector_u));
     let distance_b = (distance_34.powi(2)
         - distance_c
         - s_3.center.x.powi(2)
         - s_3.center.y.powi(2)
-        - s_3.center.z.powi(2)) / (2. * Matrix::norm(&vector_v));
+        - s_3.center.z.powi(2))
+        / (2. * Matrix::norm(&vector_v));
 
     let dot_uv = Matrix::dot(&unitvector_u, &unitvector_v);
     let dot_wt = Matrix::dot(&vector_w, &unitvector_t);
@@ -426,15 +411,11 @@ fn identify_f<C: Container>(
         let gamma_neg = 0.5 * (-dot_wt - (dot_wt_2 - value_4d).sqrt());
 
         let s_4_positive = Sphere::new(
-            Point3::from(
-                alpha * unitvector_u + beta * unitvector_v + gamma_pos * unitvector_t,
-            ),
+            Point3::from(alpha * unitvector_u + beta * unitvector_v + gamma_pos * unitvector_t),
             radius,
         )?;
         let s_4_negative = Sphere::new(
-            Point3::from(
-                alpha * unitvector_u + beta * unitvector_v + gamma_neg * unitvector_t,
-            ),
+            Point3::from(alpha * unitvector_u + beta * unitvector_v + gamma_neg * unitvector_t),
             radius,
         )?;
 

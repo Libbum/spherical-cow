@@ -4,7 +4,7 @@ extern crate rand;
 extern crate spherical_cow;
 
 use nalgebra::{Matrix, Point3};
-use obj::{Obj, SimplePolygon};
+use obj::Obj;
 use rand::distributions::Uniform;
 use spherical_cow::util::{ray_intersection_count, trimesh_volume};
 use spherical_cow::{Container, PackedVolume};
@@ -46,8 +46,9 @@ impl Container for Emerald {
 
 fn main() {
     // Load an object file from disk
-    let data = Obj::<SimplePolygon>::load(&Path::new("examples/objects/emerald.obj")).unwrap();
-    let points: Vec<Point3<f32>> = data
+    let emerald = Obj::load(&Path::new("examples/objects/emerald.obj")).unwrap();
+    let points: Vec<Point3<f32>> = emerald
+        .data
         .position
         .iter()
         .map(|pos| Point3::new(pos[0], pos[1], pos[2]))
@@ -55,15 +56,19 @@ fn main() {
 
     let mut indices: Vec<Point3<u32>> = Vec::new();
     let mut triangles: Vec<(Point3<f32>, Point3<f32>, Point3<f32>)> = Vec::new();
-    for object in data.objects.iter() {
+    for object in emerald.data.objects.iter() {
         for group in object.groups.iter() {
             for poly in group.polys.iter() {
                 indices.push(Point3::new(
-                    poly[0].0 as u32,
-                    poly[1].0 as u32,
-                    poly[2].0 as u32,
+                    poly.0[0].0 as u32,
+                    poly.0[1].0 as u32,
+                    poly.0[2].0 as u32,
                 ));
-                triangles.push((points[poly[0].0], points[poly[1].0], points[poly[2].0]));
+                triangles.push((
+                    points[poly.0[0].0],
+                    points[poly.0[1].0],
+                    points[poly.0[2].0],
+                ));
             }
         }
     }

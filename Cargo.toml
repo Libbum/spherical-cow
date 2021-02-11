@@ -7,23 +7,25 @@ repository = "https://github.com/Libbum/spherical-cow"
 readme = "./README.md"
 keywords = ["sphere", "packing", "spherepacking", "geometry", "obj"]
 license = "MIT/Apache-2.0"
+edition = "2018"
 
 [features]
 default = []
 serde-1 = ["serde", "nalgebra/serde-serialize"]
 
 [dependencies]
-rand = "0.6.5"
-nalgebra = "0.18.0"
-float-cmp = "0.4"
-itertools = "0.8"
+rand = "0.8"
+rand_distr = "0.4"
+nalgebra = "0.24"
+float-cmp = "0.8"
+itertools = "0.10"
 serde = { version = "1.0", optional = true }
 
 [dev-dependencies]
-kiss3d = "0.20.1"
-obj = "0.9"
+kiss3d = "0.29"
+obj = "0.10"
 serde_json = "1.0"
-criterion = "0.2.11"
+criterion = "0.3"
 
 [[bench]]
 name = "sphere_pack"

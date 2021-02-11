@@ -44,61 +44,48 @@ impl fmt::Display for SphericalCowError {
     }
 }
 
-impl Error for SphericalCowError {
-    fn description(&self) -> &str {
-        match *self {
-            SphericalCowError::NegativeRadius => "negative radius",
-            SphericalCowError::NegativeExtents => "negative half extent",
-            SphericalCowError::Uncontained => "outside bounding geometry",
-            SphericalCowError::NoneSetF => "none from set f",
-            SphericalCowError::NoneFront => "none from front",
-        }
-    }
-}
+impl Error for SphericalCowError {}
 
 #[test]
 fn error_display_negative_radius() {
+    use crate::shapes::Sphere;
     use nalgebra::Point3;
-    use shapes::Sphere;
 
     let err = Sphere::new(Point3::origin(), -1.).unwrap_err();
-    assert_eq!(
-        format!("{} {}", err, err.description()),
-        format!("Supplied radius is negative. negative radius")
-    );
+    assert_eq!(format!("{}", err), format!("Supplied radius is negative."));
 }
 
 #[test]
 fn error_display_negative_extent() {
-    use shapes::Cuboid;
+    use crate::shapes::Cuboid;
 
     let err = Cuboid::new(1., 1., -1.).unwrap_err();
     assert_eq!(
-        format!("{} {}", err, err.description()),
-        format!("A supplied half extent is negative. negative half extent")
+        format!("{}", err),
+        format!("A supplied half extent is negative.")
     );
 }
 
 #[test]
 fn error_display_containment() {
-    use init_spheres;
+    use crate::init_spheres;
+    use crate::shapes::Sphere;
     use nalgebra::Point3;
-    use shapes::Sphere;
 
     let container = Sphere::new(Point3::origin(), 0.1).unwrap();
 
     let err = init_spheres(&[10., 15., 20.], &container).unwrap_err();
     assert_eq!(
-        format!("{} {}", err, err.description()),
-        format!("Sphere is not contained within bounding geometry. outside bounding geometry")
+        format!("{}", err),
+        format!("Sphere is not contained within bounding geometry.")
     );
 }
 
 #[test]
 fn error_display_empty_values() {
-    use rand::thread_rng;
+    use crate::shapes::Sphere;
     use rand::prelude::SliceRandom;
-    use shapes::Sphere;
+    use rand::thread_rng;
 
     let empty_vec: Vec<Sphere> = Vec::new();
     let mut rng = thread_rng();
@@ -108,8 +95,8 @@ fn error_display_empty_values() {
         .ok_or(SphericalCowError::NoneSetF)
         .unwrap_err();
     assert_eq!(
-        format!("{} {}", err, err.description()),
-        format!("Returned none when choosing value from set f. none from set f")
+        format!("{}", err),
+        format!("Returned none when choosing value from set f.")
     );
 
     err = empty_vec
@@ -117,7 +104,7 @@ fn error_display_empty_values() {
         .ok_or(SphericalCowError::NoneFront)
         .unwrap_err();
     assert_eq!(
-        format!("{} {}", err, err.description()),
-        format!("Returned none when choosing value from front. none from front")
+        format!("{}", err),
+        format!("Returned none when choosing value from front.")
     );
 }

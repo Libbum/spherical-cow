@@ -46,11 +46,13 @@ fn packing_statistics() {
         Sphere::new(
             Point3::new(-0.03869664, -0.009303231, -0.63180053),
             0.374144,
-        ).unwrap(),
+        )
+        .unwrap(),
         Sphere::new(
             Point3::new(-0.031967796, -0.6622924, -0.43089586),
             0.3090857,
-        ).unwrap(),
+        )
+        .unwrap(),
     ];
 
     let packed = PackedVolume::from_vec(spheres, boundary);

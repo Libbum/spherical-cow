@@ -1,8 +1,8 @@
-use errors::SphericalCowError as Error;
+use crate::errors::SphericalCowError as Error;
+use crate::Container;
 use nalgebra::{distance, Point3};
 use std::f32::consts::FRAC_PI_3;
 use std::fmt;
-use Container;
 
 #[derive(PartialEq, Debug, Clone)]
 /// Constructs a sphere located at `center` in Euclidean space with a given `radius`.

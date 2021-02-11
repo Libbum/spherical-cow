@@ -5,7 +5,7 @@ extern crate spherical_cow;
 
 use float_cmp::ApproxEqUlps;
 use nalgebra::{Matrix, Point3};
-use obj::{Obj, SimplePolygon};
+use obj::Obj;
 use spherical_cow::shapes::*;
 use spherical_cow::util::{ray_intersection_count, trimesh_volume};
 use spherical_cow::Container;
@@ -32,11 +32,9 @@ fn outside_sphere() {
 fn sphere_volume() {
     let sphere = Sphere::new(Point3::new(10., 2.5, 3.8), 2.6).unwrap();
 
-    assert!(
-        sphere
-            .volume()
-            .approx_eq_ulps(&(4. / 3. * PI * 2.6_f32.powi(3)), 2)
-    );
+    assert!(sphere
+        .volume()
+        .approx_eq_ulps(&(4. / 3. * PI * 2.6_f32.powi(3)), 2));
 }
 
 #[test]
@@ -59,11 +57,9 @@ fn outside_cuboid() {
 fn cuboid_volume() {
     let cuboid = Cuboid::new(15.2, 8.0, 12.3).unwrap();
 
-    assert!(
-        cuboid
-            .volume()
-            .approx_eq_ulps(&((2. * 15.2) * (2. * 8.) * (2. * 12.3)), 2)
-    );
+    assert!(cuboid
+        .volume()
+        .approx_eq_ulps(&((2. * 15.2) * (2. * 8.) * (2. * 12.3)), 2));
 }
 
 struct Emerald {
@@ -72,18 +68,23 @@ struct Emerald {
 
 impl Emerald {
     fn build() -> Emerald {
-        let data = Obj::<SimplePolygon>::load(&Path::new("examples/objects/emerald.obj")).unwrap();
-        let points: Vec<Point3<f32>> = data
+        let emerald = Obj::load(&Path::new("examples/objects/emerald.obj")).unwrap();
+        let points: Vec<Point3<f32>> = emerald
+            .data
             .position
             .iter()
             .map(|pos| Point3::new(pos[0], pos[1], pos[2]))
             .collect();
 
         let mut triangles: Vec<(Point3<f32>, Point3<f32>, Point3<f32>)> = Vec::new();
-        for object in data.objects.iter() {
+        for object in emerald.data.objects.iter() {
             for group in object.groups.iter() {
                 for poly in group.polys.iter() {
-                    triangles.push((points[poly[0].0], points[poly[1].0], points[poly[2].0]));
+                    triangles.push((
+                        points[poly.0[0].0],
+                        points[poly.0[1].0],
+                        points[poly.0[2].0],
+                    ));
                 }
             }
         }

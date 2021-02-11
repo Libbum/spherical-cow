@@ -1,6 +1,6 @@
-use errors::SphericalCowError as Error;
-use shapes::Sphere;
-use Container;
+use crate::errors::SphericalCowError as Error;
+use crate::shapes::Sphere;
+use crate::Container;
 
 #[derive(PartialEq, Debug, Clone)]
 /// Constructs a cuboid centered at the origin in Euclidean space.
