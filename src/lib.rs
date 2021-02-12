@@ -43,6 +43,7 @@
 //! Valera *et al.*, [Computational Particle Mechanics 2, 161 (2015)](https://doi.org/10.1007/s40571-015-0045-8).
 
 #![warn(missing_docs)]
+#![allow(clippy::needless_doctest_main)]
 
 pub mod errors;
 #[cfg(feature = "serde-1")]

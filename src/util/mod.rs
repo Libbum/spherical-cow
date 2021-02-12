@@ -25,7 +25,7 @@ pub fn ray_intersection_count(
             let inv_det = 1. / det;
             let tvec = Point3::origin() - vert0;
             let u = Matrix::dot(&tvec, &pvec) * inv_det;
-            if u < 0. || u > 1. {
+            if !(0. ..=1.).contains(&u) {
                 return 0;
             }
             let qvec = Matrix::cross(&tvec, &edge1);

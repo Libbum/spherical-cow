@@ -8,7 +8,7 @@ use std::marker::PhantomData;
 
 use crate::shapes::{Cuboid, Sphere};
 use crate::Container;
-use PackedVolume;
+use crate::PackedVolume;
 
 impl Serialize for Sphere {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -135,7 +135,7 @@ impl<'de> Deserialize<'de> for Sphere {
             }
         }
 
-        const FIELDS: &'static [&'static str] = &["center", "radius"];
+        const FIELDS: &[&str] = &["center", "radius"];
         deserializer.deserialize_struct("Sphere", FIELDS, SphereVisitor)
     }
 }
@@ -218,7 +218,7 @@ impl<'de> Deserialize<'de> for Cuboid {
             }
         }
 
-        const FIELDS: &'static [&'static str] = &["half_extents"];
+        const FIELDS: &[& str] = &["half_extents"];
         deserializer.deserialize_struct("Cuboid", FIELDS, CuboidVisitor)
     }
 }
@@ -316,7 +316,7 @@ impl<'de, C: Container + Deserialize<'de>> Deserialize<'de> for PackedVolume<C> 
             }
         }
 
-        const FIELDS: &'static [&'static str] = &["spheres", "container"];
+        const FIELDS: &[& str] = &["spheres", "container"];
         deserializer.deserialize_struct("PackedVolume", FIELDS, PackedVolumeVisitor(PhantomData))
     }
 }
