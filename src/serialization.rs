@@ -218,7 +218,7 @@ impl<'de> Deserialize<'de> for Cuboid {
             }
         }
 
-        const FIELDS: &[& str] = &["half_extents"];
+        const FIELDS: &[&str] = &["half_extents"];
         deserializer.deserialize_struct("Cuboid", FIELDS, CuboidVisitor)
     }
 }
@@ -316,7 +316,7 @@ impl<'de, C: Container + Deserialize<'de>> Deserialize<'de> for PackedVolume<C> 
             }
         }
 
-        const FIELDS: &[& str] = &["spheres", "container"];
+        const FIELDS: &[&str] = &["spheres", "container"];
         deserializer.deserialize_struct("PackedVolume", FIELDS, PackedVolumeVisitor(PhantomData))
     }
 }
