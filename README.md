@@ -82,6 +82,10 @@ These files may not be copied, modified, or distributed except according to thos
 
 ## Deeply linked dependencies
 
-The [wayland-protocols](https://github.com/Smithay/wayland-rs/tree/master/wayland-protocols) library (released under an MIT license) is used by [kiss3d](https://github.com/sebcrozet/kiss3d) and [obj](https://github.com/Smithay/wayland-rs/tree/master/wayland-protocols), both of which are only extant in the examples directory of this project (and thus are NOT a part of the library).
+A large number of example files within this repository (but are NOT distributed as part of this library) have GPL licensing obligations. Below is one example:
+
+The [wayland-protocols](https://github.com/Smithay/wayland-rs/tree/master/wayland-protocols) library (released under an MIT license) is used by [kiss3d](https://github.com/sebcrozet/kiss3d) (used for visualisation previews in the examples).
 Content therein: the file `misc/server-decoration.xml`, is Copyright (C) 2015 Martin Gräßlin and licensed under the GNU Lesser General Public Library, version 2.1. You can find a copy of this license at [https://www.gnu.org/licenses/lgpl-2.1.en.html](https://www.gnu.org/licenses/lgpl-2.1.en.html)
+
+For a complete list of these obligations, please refer to the license information from the associated crates. The Fossa links above can also assist.
 
