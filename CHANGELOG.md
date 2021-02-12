@@ -1,9 +1,12 @@
 # Changelog
 
+- 0.1.4
+  - Previous version omitted checks on serialisation. This release satisfies the upgrade requirements therein.
+
 - 0.1.3
-    - Removed nightly dependency (thanks [aleph_0](https://github.com/aleph-oh)).
-    - Update to 2018 Edition.
-    - Dependencies updated, many were 2 years old.
+  - Removed nightly dependency (thanks [aleph_0](https://github.com/aleph-oh)).
+  - Update to 2018 Edition.
+  - Dependencies updated, many were 2 years old.
 
 - 0.1.2
 
