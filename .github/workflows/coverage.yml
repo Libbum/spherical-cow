@@ -1,10 +1,10 @@
 on: [push]
 
-name: build
+name: Coverage
 
 jobs:
   check:
-    name: Code coverage
+    name: Check coverage
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
